@@ -12,6 +12,7 @@ admminrouter.use(express.urlencoded({extended:true}))
 admminrouter.get("/",admincontroller.login)
 admminrouter.post("/adminlogin",admincontroller.adminlogin)
 admminrouter.get("/adminpannel",admincontroller.adminpannel)
+admminrouter.get("/userslist",admincontroller.userslist)
 
 
 

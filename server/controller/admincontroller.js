@@ -13,8 +13,8 @@ const login=async(req,res)=>{
 }
 const adminlogin=async(req,res)=>{
     try {
-        const username=req.body.username
-        const user= await adminmodel.findOne({username:username})
+        const trues="true"
+        const user= await adminmodel.findOne({isAdmin:trues})
         const passwordmatch= await bcrypt.compare(req.body.password, user.password)
         console.log(user.password);
         if(passwordmatch)
@@ -45,6 +45,17 @@ const adminpannel=async(req,res)=>{
         
     }
 }
+const userslist=async(req,res)=>{
+    try {
+        const user= await adminmodel.find({})
+        console.log(user);
+        res.render("admin/userslist",{users:user})
+        
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+}
 
 
 
@@ -54,6 +65,7 @@ const adminpannel=async(req,res)=>{
 module.exports={
     adminlogin,
     login,
-    adminpannel
+    adminpannel,
+    userslist
 
 }
