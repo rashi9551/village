@@ -16,6 +16,7 @@ usrouter.post("/login",usercontroller.login)
 usrouter.get("/forgotpassword",usercontroller.forgotpassword)
 usrouter.post("/forgotverify",usercontroller.forgotverify)
 usrouter.get("/newpassword",usercontroller.newpassword)
+usrouter.post("/resetpassword",usercontroller.resetpassword)
 
 
 
