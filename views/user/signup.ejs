@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign up Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('images/bgimage.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .alter{
+            color: red;
+        }
+
+        .container {
+            background-color: transparent;
+            border: rgb(0, 0, 0);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+            padding: 50px 150px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            color: red;
+            size: 5px;
+        }
+
+        form {
+            text-align: center;
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+    background: linear-gradient(to right, violet, rgb(94, 31, 106));
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50px;
+    border: none;
+    padding: 10px 20px; 
+    margin: auto; 
+    display: block;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>REGISTRATION</h2>
+        <form action="/signotp" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <% if(locals.nameerror){%>
+                <div class="alter text-danger text-start"><%= nameerror%></div>
+
+            <%}%>
+            
+            <label for="mobile">Mobile Number:</label>
+            <input type="tel" id="mobile" name="phone" required>
+            
+            <% if(locals.phoneerror){%>
+                <div class="alter text-danger text-start"><%= phoneerror%></div>
+
+            <%}%>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <% if(locals.emailerror){%>
+                <div class="alter text-danger text-start"><%= emailerror%></div>
+
+            <%}%>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+          
+            
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm_password" required>
+           
+            <input type="submit" value="Signup">
+        
+
+        </form>
+        <% if(locals.passworderror){%>
+            <div class="alter text-danger text-start"><%= passworderror%></div>
+
+        <%}%>
+        <% if(locals.cpassworderror){%>
+            <div class="alter  text-start"><%= cpassworderror%></div>
+
+        <%}%>
+        
+    </div>
+</body>
+</html>
