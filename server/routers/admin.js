@@ -21,6 +21,9 @@ admminrouter.post("/searchuser",admincontroller.searchuser)
 admminrouter.get("/searchview",admincontroller.searchview)
 admminrouter.get("/filter/:option",admincontroller.filter)
 
+admminrouter.get("/adlogout",admincontroller.adlogout)
+
+
 
 admminrouter.get("/category",admincontroller.category)
 admminrouter.get("/newcat",admincontroller.newcat)

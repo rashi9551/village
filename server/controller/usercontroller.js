@@ -333,7 +333,7 @@ const forgotverify = async (req, res) => {
       await sendmail(email, otp);
       res.redirect("/otp");
     } else {
-      res.render("users/forgotpass", { emaile: "E-Mail Not Exist" });
+      res.render("users/forgot", { emaile: "E-Mail Not Exist" });
     }
   } catch (err) {
     res.status(400).send("error occurred: " + err.message);
@@ -386,9 +386,13 @@ const resetpassword = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    req.session.isAuth = false;
-    req.session.destroy();
-    res.redirect("/");
+    if (req.session.isAuth) {
+      req.session.isAuth = false;
+      req.session.destroy();
+      res.redirect("/");
+    } else {
+      res.redirect("/");
+    }
   } catch (error) {
     console.log(error);
     res.send("Error Occured");
