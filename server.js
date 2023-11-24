@@ -4,6 +4,7 @@ const router=require("./server/routers/user")
 const path = require('path')
 const nocache=require("nocache")
 const session=require('express-session')
+const multer=require("multer")
 
 const adminrouter=require("./server/routers/admin")
 
@@ -23,6 +24,29 @@ app.use(express.static(__dirname +'/public/userAssets'))
 app.use(express.static(__dirname +'/public/adminAssets'))
 app.set("view engine","ejs")
 app.set('views',path.join(__dirname,'views'))
+
+
+app.use('/uploads',express.static('uploads'))
+
+
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname+".png"); 
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/your-upload-route', upload.array('files'), (req, res) => {
+  console.log(req.files);
+});
+
+
 
 app.use("/",router)
 app.use("/admin",adminrouter)

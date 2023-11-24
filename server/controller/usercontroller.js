@@ -13,6 +13,8 @@ const {
   passwordValid,
 } = require("../../utils/validators/usersignupvalidators");
 const { Email, pass } = require("../../.env");
+const catModel = require("../model/category_model");
+const productModel = require("../model/product_model");
 
 const generateotp = () => {
   const otp = otpgenerator.generate(6, {
@@ -35,7 +37,7 @@ const sendmail = async (email, otp) => {
     });
 
     var mailOptions = {
-      from: "Village<thefurnify@gmail.com>",
+      from: "Village<theVillage@gmail.com>",
       to: email,
       subject: "E-Mail Verification",
       text: "Your OTP is:" + otp,
@@ -49,15 +51,84 @@ const sendmail = async (email, otp) => {
 };
 
 const index = async (req, res) => {
-  await res.render("user/index");
+  try {
+    const categories = await catModel.find();
+    console.log(categories);
+    res.render("users/index", { categories });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+const shop = async (req, res) => {
+  try {
+    const category = req.query.category;
+
+    // Fetch products based on the selected category
+    const products = await productModel
+      .find({ $and: [{ category }, { status: true }] })
+      .exec();
+    const categories = await catModel.find();
+    const ctCategory = categories.find(
+      (cat) => cat._id.toString() === category
+    );
+
+    // Extract the name of the selected category
+    const categoryName = ctCategory ? ctCategory.name : null;
+
+    // Render the shop page with the filtered products
+    res.render("users/shop", {
+      categoryName,
+      categories,
+      products,
+      selectedCategory: category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("error occured");
+  }
 };
 
-const signin = async (req, res) => {
-  await res.render("user/signin");
+const singleproduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await productModel.findOne({ _id: id });
+    const categories = await catModel.find();
+    console.log(typeof categories);
+    product.images = product.images.map((image) => image.replace(/\\/g, "/"));
+    console.log("Image Path:", product.images[0]);
+    res.render("users/singleproduct", { categories, product: product });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("error occured");
+  }
 };
+
+const profile = async (req, res) => {
+  try {
+    if (req.session.isAuth) {
+      const categories = await catModel.find();
+      const id = req.session.userId;
+      const user = await userModel.findOne({ _id: id }); // Assuming you want to find the first user
+      console.log(user.username);
+      const name = user.username;
+      res.render("users/profile", { categories, name });
+    } else {
+      console.log(req.session.user);
+      res.render("users/signin");
+    }
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
+
+// const signin = async (req, res) => {
+//   await res.render("users/signin");
+// };
 
 const signup = async (req, res) => {
-  await res.render("user/signup");
+  await res.render("users/signup");
 };
 const signotp = async (req, res) => {
   try {
@@ -75,19 +146,19 @@ const signotp = async (req, res) => {
 
     const emailExist = await userModel.findOne({ email: email });
     if (emailExist) {
-      res.render("user/signup", { emailerror: "E-mail already exits" });
+      res.render("users/signup", { emailerror: "E-mail already exits" });
     } else if (!isusernameValid) {
-      res.render("user/signup", { nameerror: "Enter a valid Name" });
+      res.render("users/signup", { nameerror: "Enter a valid Name" });
     } else if (!isEmailValid) {
-      res.render("user/signup", { emailerror: "Enter a valid E-mail" });
+      res.render("users/signup", { emailerror: "Enter a valid E-mail" });
     } else if (!isPhoneValid) {
-      res.render("user/signup", { phoneerror: "Enter a valid Phone Number" });
+      res.render("users/signup", { phoneerror: "Enter a valid Phone Number" });
     } else if (!ispasswordValid) {
-      res.render("user/signup", {
+      res.render("users/signup", {
         passworderror: "Password should contain one(A,a,2)",
       });
     } else if (!iscpasswordValid) {
-      res.render("user/signup", {
+      res.render("users/signup", {
         cpassworderror: "Password and Confirm password should be match",
       });
     } else {
@@ -128,37 +199,46 @@ const signotp = async (req, res) => {
 };
 const otp = async (req, res) => {
   try {
-    res.render("user/otp");
+    if (req.session.signup || req.session.forgot) {
+      res.render("users/otp");
+    } else {
+      res.redirect("/");
+    }
   } catch {
     res.status(200).send("error occured");
   }
 };
 const verifyotp = async (req, res) => {
   try {
-    const enteredotp = req.body.otp;
-    const user = req.session.user;
-    console.log(enteredotp);
-    console.log(req.session.user);
-    const email = req.session.user.email;
-    const userdb = await otpModel.findOne({ email: email });
-    const otp = userdb.otp;
-    const expiry = userdb.expiry;
-    console.log(otp);
-    if (enteredotp == otp && expiry.getTime() >= Date.now()) {
-      user.isVerified = true;
-      try {
-        if (req.session.signup) {
-          await userModel.create(user);
-          res.redirect("/");
-        } else if (req.session.forgot) {
-          res.redirect("/newpassword");
+    if (req.session.signup || req.session.forgot) {
+      const enteredotp = req.body.otp;
+      const user = req.session.user;
+      console.log(enteredotp);
+      console.log(req.session.user);
+      const email = req.session.user.email;
+      const userdb = await otpModel.findOne({ email: email });
+      const otp = userdb.otp;
+      const expiry = userdb.expiry;
+      console.log(otp);
+      if (enteredotp == otp && expiry.getTime() >= Date.now()) {
+        user.isVerified = true;
+        try {
+          if (req.session.signup) {
+            await userModel.create(user);
+            req.session.signup = false;
+            res.redirect("/");
+          } else if (req.session.forgot) {
+            res.redirect("/newpassword");
+          }
+        } catch (error) {
+          console.error(error);
+          res.status(500).send("Error occurred while saving user data");
         }
-      } catch (error) {
-        console.error(error);
-        res.status(500).send("Error occurred while saving user data");
+      } else {
+        res.status(400).send("Wrong OTP or Time Expired");
       }
     } else {
-      res.status(400).send("Wrong OTP or Time Expired");
+      res.redirect("/");
     }
   } catch (error) {
     console.log(err);
@@ -167,17 +247,21 @@ const verifyotp = async (req, res) => {
 };
 const resendotp = async (req, res) => {
   try {
-    const email = req.session.user.email;
-    const otp = generateotp();
-    console.log(otp);
+    if (req.session.signup || req.session.forgot) {
+      const email = req.session.user.email;
+      const otp = generateotp();
+      console.log(otp);
 
-    const currentTimestamp = Date.now();
-    const expiryTimestamp = currentTimestamp + 60 * 1000;
-    await otpModel.updateOne(
-      { email: email },
-      { otp: otp, expiry: new Date(expiryTimestamp) }
-    );
-    await sendmail(email, otp);
+      const currentTimestamp = Date.now();
+      const expiryTimestamp = currentTimestamp + 60 * 1000;
+      await otpModel.updateOne(
+        { email: email },
+        { otp: otp, expiry: new Date(expiryTimestamp) }
+      );
+      await sendmail(email, otp);
+    } else {
+      res.redirect("/");
+    }
   } catch (err) {
     console.log(err);
   }
@@ -205,16 +289,16 @@ const login = async (req, res) => {
       res.redirect("/");
     } else {
       // Authentication failed
-      res.render("user/signin", { passworderror: "incorrect password" });
+      res.render("users/signin", { passworderror: "incorrect password" });
     }
   } catch (error) {
     // Error occurred, could be due to user not found or other issues
-    res.render("user/signin", { username: "incorrect username" });
+    res.render("users/signin", { username: "incorrect username" });
   }
 };
 const forgotpassword = async (req, res) => {
   try {
-    res.render("user/forgot");
+    res.render("users/forgot");
   } catch {
     res.status(200).send("error occured");
   }
@@ -249,7 +333,7 @@ const forgotverify = async (req, res) => {
       await sendmail(email, otp);
       res.redirect("/otp");
     } else {
-      res.render("user/forgotpass", { emaile: "E-Mail Not Exist" });
+      res.render("users/forgotpass", { emaile: "E-Mail Not Exist" });
     }
   } catch (err) {
     res.status(400).send("error occurred: " + err.message);
@@ -258,29 +342,41 @@ const forgotverify = async (req, res) => {
 };
 const newpassword = async (req, res) => {
   try {
-    res.render("user/newpassword");
+    if (req.session.forgot) {
+      res.render("users/newpassword");
+    } else {
+      res.redirect("/");
+    }
   } catch {
     res.status(400).send("error occured");
   }
 };
 const resetpassword = async (req, res) => {
   try {
-    const password = req.body.newPassword;
-    const cpassword = req.body.confirmPassword;
+    if (req.session.forgot) {
+      const password = req.body.newPassword;
+      const cpassword = req.body.confirmPassword;
 
-    const ispasswordValid = passwordValid(password);
-    const iscpasswordValid = confirmpasswordValid(cpassword, password);
+      const ispasswordValid = passwordValid(password);
+      const iscpasswordValid = confirmpasswordValid(cpassword, password);
 
-    if (!ispasswordValid) {
-      res.render("users/newpassword", {
-        perror: "Password should contain (A,a,@)",
-      });
-    } else if (!iscpasswordValid) {
-      res.render("users/newpassword", { cperror: "Passwords not match" });
+      if (!ispasswordValid) {
+        res.render("users/newpassword", {
+          perror: "Password should contain (A,a,@)",
+        });
+      } else if (!iscpasswordValid) {
+        res.render("users/newpassword", { cperror: "Passwords not match" });
+      } else {
+        const hashedpassword = await bcrypt.hash(password, 10);
+        const email = req.session.user.email;
+        await userModel.updateOne(
+          { email: email },
+          { password: hashedpassword }
+        );
+        req.session.forgot = false;
+        res.redirect("/");
+      }
     } else {
-      const hashedpassword = await bcrypt.hash(password, 10);
-      const email = req.session.user.email;
-      await userModel.updateOne({ email: email }, { password: hashedpassword });
       res.redirect("/");
     }
   } catch {
@@ -288,9 +384,19 @@ const resetpassword = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  try {
+    req.session.isAuth = false;
+    req.session.destroy();
+    res.redirect("/");
+  } catch (error) {
+    console.log(error);
+    res.send("Error Occured");
+  }
+};
+
 module.exports = {
   index,
-  signin,
   signup,
   signotp,
   login,
@@ -301,4 +407,8 @@ module.exports = {
   forgotverify,
   newpassword,
   resetpassword,
+  shop,
+  singleproduct,
+  profile,
+  logout,
 };
