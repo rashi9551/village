@@ -42,11 +42,8 @@ const adminlogin = async (req, res) => {
 // admin pannel page 
 const adminpannel = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       res.render("admin/adminpannel");
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     res.send(error);
   }
@@ -55,13 +52,9 @@ const adminpannel = async (req, res) => {
 // admin userlist 
 const userslist = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const user = await adminmodel.find({});
       console.log(user);
       res.render("admin/userslist", { users: user });
-    } else {
-      res.redirect("/admin");
-    }
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -71,7 +64,6 @@ const userslist = async (req, res) => {
 // admin user update 
 const userupdate = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const email = req.params.email;
       const user = await adminmodel.findOne({ email: email });
       if (!user) {
@@ -80,9 +72,7 @@ const userupdate = async (req, res) => {
       user.status = !user.status;
       await user.save();
       res.redirect("/admin/userslist");
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -92,16 +82,13 @@ const userupdate = async (req, res) => {
 // admin searchuser 
 const searchuser = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const searchName = req.body.search;
       const data = await adminmodel.find({
         username: { $regex: new RegExp(`^${searchName}`, `i`) },
       });
       req.session.searchuser = data;
       res.redirect("/admin/searchview");
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -111,12 +98,9 @@ const searchuser = async (req, res) => {
 // admin searchview 
 const searchview = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const user = req.session.searchuser;
       res.render("admin/userslist", { users: user });
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -126,7 +110,6 @@ const searchview = async (req, res) => {
 // admin sorting 
 const filter = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const option = req.params.option;
       if (option === "A-Z") {
         user = await adminmodel.find().sort({ username: 1 });
@@ -138,9 +121,7 @@ const filter = async (req, res) => {
         user = await adminmodel.find();
       }
       res.render("admin/userslist", { users: user });
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -150,12 +131,9 @@ const filter = async (req, res) => {
 // admin category 
 const category = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const category = await categoryModel.find({});
       res.render("admin/categories", { cat: category });
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -165,11 +143,8 @@ const category = async (req, res) => {
 // admin new category page
 const newcat = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       res.render("admin/addcategories");
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
   }
@@ -178,14 +153,11 @@ const newcat = async (req, res) => {
 // admin new category adding 
 const addcategory = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const catName = req.body.categoryName;
       const catdes = req.body.description;
       await categoryModel.insertMany({ name: catName, description: catdes });
       res.redirect("/admin/category");
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -195,15 +167,12 @@ const addcategory = async (req, res) => {
 // admin category unlisting 
 const unlistcat = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const id = req.params.id;
       const category = await categoryModel.findOne({ _id: id });
       category.status = !category.status;
       await category.save();
       res.redirect("/admin/category");
-    } else {
-      res.redirect("/admin");
-    }
+   
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -213,13 +182,10 @@ const unlistcat = async (req, res) => {
 // admin category update page
 const updatecat = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const id = req.params.id;
       const cat = await categoryModel.findOne({ _id: id });
       res.render("admin/updatecat", { itemcat: cat });
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -230,7 +196,6 @@ const updatecat = async (req, res) => {
 // admin category updating
 const updatecategory = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       const id = req.params.id;
       const catName = req.body.categoryName;
       const catdec = req.body.description;
@@ -239,9 +204,7 @@ const updatecategory = async (req, res) => {
         { name: catName, description: catdec }
       );
       res.redirect("/admin/category");
-    } else {
-      res.redirect("/admin");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -252,12 +215,9 @@ const updatecategory = async (req, res) => {
 // admin logout 
 const adlogout = async (req, res) => {
   try {
-    if (req.session.isadAuth) {
       req.session.isadAuth = false;
       req.session.destroy();
-    } else {
-      res.redirect("/admin");
-    }
+  
   } catch (error) {
     console.log(error);
     res.send(error);

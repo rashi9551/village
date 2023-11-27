@@ -82,6 +82,9 @@
             text-align: center;
             margin-top: 10px;
         }
+        .alter{
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -91,6 +94,10 @@
             <label for="otp">Enter OTP:</label>
             <input type="text" id="otp" name="otp" required>
             <button type="submit">Verify OTP</button>
+            <% if(locals.otperror){%>
+                <div class="alter text-danger text-start"><%=otperror%></div>
+    
+            <%}%>
         </form>
         <p>
             <a href="/resendotp" id="resendButton" onclick="restartTimer()">Resend OTP</a>

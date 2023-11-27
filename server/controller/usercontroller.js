@@ -113,17 +113,13 @@ const singleproduct = async (req, res) => {
 // user profile page 
 const profile = async (req, res) => {
   try {
-    if (req.session.isAuth) {
       const categories = await catModel.find();
       const id = req.session.userId;
       const user = await userModel.findOne({ _id: id }); // Assuming you want to find the first user
       console.log(user.username);
       const name = user.username;
       res.render("users/profile", { categories, name });
-    } else {
       console.log(req.session.user);
-      res.render("users/signin");
-    }
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -208,11 +204,8 @@ const signotp = async (req, res) => {
 // otp page rendering 
 const otp = async (req, res) => {
   try {
-    if (req.session.signup || req.session.forgot) {
       res.render("users/otp");
-    } else {
-      res.redirect("/");
-    }
+    
   } catch {
     res.status(200).send("error occured");
   }
@@ -221,7 +214,6 @@ const otp = async (req, res) => {
 // otp verifying page 
 const verifyotp = async (req, res) => {
   try {
-    if (req.session.signup || req.session.forgot) {
       const enteredotp = req.body.otp;
       const user = req.session.user;
       console.log(enteredotp);
@@ -246,11 +238,9 @@ const verifyotp = async (req, res) => {
           res.status(500).send("Error occurred while saving user data");
         }
       } else {
-        res.status(400).send("Wrong OTP or Time Expired");
+        res.render("users/otp",{otperror:"Worng password/Time expired"});
       }
-    } else {
-      res.redirect("/");
-    }
+   
   } catch (error) {
     console.log(err);
     res.status(500).send("error occured");
@@ -259,7 +249,6 @@ const verifyotp = async (req, res) => {
 const resendotp = async (req, res) => {
   try {
     console.log("resend otp is working");
-    if (req.session.signup || req.session.forgot) {
       const email = req.session.user.email;
       const otp = generateotp();
       console.log(otp);
@@ -271,9 +260,7 @@ const resendotp = async (req, res) => {
         { otp: otp, expiry: new Date(expiryTimestamp) }
       );
       await sendmail(email, otp);
-    } else {
-      res.redirect("/");
-    }
+    
   } catch (err) {
     console.log(err);
   }
@@ -354,18 +341,13 @@ const forgotverify = async (req, res) => {
 };
 const newpassword = async (req, res) => {
   try {
-    if (req.session.forgot) {
       res.render("users/newpassword");
-    } else {
-      res.redirect("/");
-    }
   } catch {
     res.status(400).send("error occured");
   }
 };
 const resetpassword = async (req, res) => {
   try {
-    if (req.session.forgot) {
       const password = req.body.newPassword;
       const cpassword = req.body.confirmPassword;
 
@@ -388,9 +370,6 @@ const resetpassword = async (req, res) => {
         req.session.forgot = false;
         res.redirect("/");
       }
-    } else {
-      res.redirect("/");
-    }
   } catch {
     res.status(400).send("error occured");
   }
@@ -398,13 +377,11 @@ const resetpassword = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    if (req.session.isAuth) {
+    
       req.session.isAuth = false;
       req.session.destroy();
       res.redirect("/");
-    } else {
-      res.redirect("/");
-    }
+    
   } catch (error) {
     console.log(error);
     res.send("Error Occured");
