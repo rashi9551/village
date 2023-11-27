@@ -1,6 +1,6 @@
 <!-- /*
 * Bootstrap 5
-* Template Name: Furni
+* Template Name: Village
 * Template Author: Untree.co
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
@@ -21,7 +21,7 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<link href="css/tiny-slider.css" rel="stylesheet">
 		<link href="css/style.css" rel="stylesheet">
-		<title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
+		<title>Village Home Decor</title>
 	</head>
 
 	<body>
@@ -64,16 +64,16 @@
 
 
 		<!-- Start Header/Navigation -->
-		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Village navigation bar">
 
 			<div class="container">
 				<a class="navbar-brand" href="/">Village<span>.</span></a>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsVillage" aria-controls="navbarsVillage" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
-				<div class="collapse navbar-collapse" id="navbarsFurni">
+				<div class="collapse navbar-collapse" id="navbarsVillage">
 					<!-- <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
 						<li class="nav-item active">
 							<a class="nav-link" href="index.html">Home</a>
@@ -99,7 +99,7 @@
 		</nav>
 		<div class="select-line" style="background-color: #3b5d50;">
 			<ul class="custom-horizontal-list navbar-nav ms-auto mb-2 mb-md-0" style="display: flex; list-style: none; flex-direction: row; justify-content: center; gap: 23px;">
-				<% categories.forEach(category => { %>
+				<% categories.filter(category => category.status !== false).forEach(category => { %>
 					<li class="nav-item">
 					  <a class="nav-link" href="/shop?category=<%= category._id %>" style="color: #F0EAD6; font-size: 150%;">
 						<%= category.name %>
@@ -133,7 +133,7 @@
 		<div class="untree_co-section product-section before-footer-section">
 		    <div class="container">
 				<div class="row">
-					<% products.forEach(product => { %>
+					<% products.filter(category => category.status !== false).forEach(product => { %>
 					  <div class="col-12 col-md-4 col-lg-3 mb-5">
 						<a class="product-item" href="/singleproduct/<%= product._id %>">
 						  <img src="<%= product.images[0] %>" class="img-fluid product-thumbnail" style="width: 100%; height: 200px";>

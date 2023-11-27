@@ -1,8 +1,11 @@
+// modules importing 
 const productModel = require("../model/product_model");
 const categoryModel = require("../model/category_model");
 const fs = require("fs");
 const path = require("path");
 
+
+// product page rendering 
 const product = async (req, res) => {
   try {
     const products = await productModel.find({}).populate({
@@ -16,6 +19,7 @@ const product = async (req, res) => {
   }
 };
 
+// new product adding product page 
 const newproduct = async (req, res) => {
   try {
     const categories = await categoryModel.find({});
@@ -24,6 +28,7 @@ const newproduct = async (req, res) => {
   } catch (error) {}
 };
 
+// new adding product  
 const addproduct = async (req, res) => {
   try {
     const { productName, parentCategory, images, stock, price, description } =
@@ -48,6 +53,7 @@ const addproduct = async (req, res) => {
   }
 };
 
+// product unlisting 
 const unlist = async (req, res) => {
   try {
     const id = req.params.id;
@@ -67,6 +73,8 @@ const unlist = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+// product deleting
 const deleteproduct = async (req, res) => {
   try {
     const id = req.params.id;
@@ -77,17 +85,9 @@ const deleteproduct = async (req, res) => {
     res.send(error);
   }
 };
-const updatepro = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const product = await productModel.findById(id);
-    console.log(product);
-    res.render("admin/updateproduct", { product: product });
-  } catch (error) {
-    console.log(error);
-    res.send(error);
-  }
-};
+
+
+// product image editing 
 const editing = async (req, res) => {
   try {
     const id = req.params.id;
@@ -98,6 +98,8 @@ const editing = async (req, res) => {
     res.send(error);
   }
 };
+
+// product deleting 
 const deleteimg = async (req, res) => {
   try {
     const pid = req.query.pid;
@@ -126,6 +128,8 @@ const deleteimg = async (req, res) => {
     res.send("Error Occured");
   }
 };
+
+// product image updating 
 const updateimg = async (req, res) => {
   try {
     const id = req.params.id;
@@ -141,6 +145,21 @@ const updateimg = async (req, res) => {
     res.send("Error Occured");
   }
 };
+
+// product update page 
+const updatepro = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const product = await productModel.findById(id);
+    console.log(product);
+    res.render("admin/updateproduct", { product: product });
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+};
+
+// updating the  product
 const updateproduct = async (req, res) => {
   try {
     const id = req.params.id;
@@ -157,7 +176,7 @@ const updateproduct = async (req, res) => {
     res.send("Error Occured");
   }
 };
-
+  // module exporting 
 module.exports = {
   product,
   newproduct,

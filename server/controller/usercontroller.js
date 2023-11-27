@@ -1,10 +1,9 @@
+// modules importing 
 const userModel = require("../model/user");
 const otpModel = require("../model/user_otpmodel");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
-
 const bcrypt = require("bcryptjs");
-
 const {
   nameValid,
   emailValid,
@@ -15,7 +14,10 @@ const {
 const { Email, pass } = require("../../.env");
 const catModel = require("../model/category_model");
 const productModel = require("../model/product_model");
+const { product } = require("./productcontroller");
 
+
+// otp generating function 
 const generateotp = () => {
   const otp = otpgenerator.generate(6, {
     upperCaseAlphabets: false,
@@ -26,6 +28,8 @@ const generateotp = () => {
   console.log("Generated OTP:", otp);
   return otp;
 };
+
+// otp email sending function 
 const sendmail = async (email, otp) => {
   try {
     var transporter = nodemailer.createTransport({
@@ -50,6 +54,7 @@ const sendmail = async (email, otp) => {
   }
 };
 
+// home page rendering 
 const index = async (req, res) => {
   try {
     const categories = await catModel.find();
@@ -60,11 +65,12 @@ const index = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+// shoping page 
 const shop = async (req, res) => {
   try {
     const category = req.query.category;
 
-    // Fetch products based on the selected category
     const products = await productModel
       .find({ $and: [{ category }, { status: true }] })
       .exec();
@@ -73,10 +79,8 @@ const shop = async (req, res) => {
       (cat) => cat._id.toString() === category
     );
 
-    // Extract the name of the selected category
     const categoryName = ctCategory ? ctCategory.name : null;
 
-    // Render the shop page with the filtered products
     res.render("users/shop", {
       categoryName,
       categories,
@@ -89,6 +93,8 @@ const shop = async (req, res) => {
   }
 };
 
+
+// single product page 
 const singleproduct = async (req, res) => {
   try {
     const id = req.params.id;
@@ -104,6 +110,7 @@ const singleproduct = async (req, res) => {
   }
 };
 
+// user profile page 
 const profile = async (req, res) => {
   try {
     if (req.session.isAuth) {
@@ -123,13 +130,13 @@ const profile = async (req, res) => {
   }
 };
 
-// const signin = async (req, res) => {
-//   await res.render("users/signin");
-// };
 
+// user signup page 
 const signup = async (req, res) => {
   await res.render("users/signup");
 };
+
+// user otp sneding 
 const signotp = async (req, res) => {
   try {
     const username = req.body.username;
@@ -197,6 +204,8 @@ const signotp = async (req, res) => {
     res.send("error");
   }
 };
+
+// otp page rendering 
 const otp = async (req, res) => {
   try {
     if (req.session.signup || req.session.forgot) {
@@ -208,6 +217,8 @@ const otp = async (req, res) => {
     res.status(200).send("error occured");
   }
 };
+
+// otp verifying page 
 const verifyotp = async (req, res) => {
   try {
     if (req.session.signup || req.session.forgot) {
@@ -247,13 +258,14 @@ const verifyotp = async (req, res) => {
 };
 const resendotp = async (req, res) => {
   try {
+    console.log("resend otp is working");
     if (req.session.signup || req.session.forgot) {
       const email = req.session.user.email;
       const otp = generateotp();
       console.log(otp);
 
       const currentTimestamp = Date.now();
-      const expiryTimestamp = currentTimestamp + 60 * 1000;
+      const expiryTimestamp = currentTimestamp + 30 * 1000;
       await otpModel.updateOne(
         { email: email },
         { otp: otp, expiry: new Date(expiryTimestamp) }
@@ -399,6 +411,8 @@ const logout = async (req, res) => {
   }
 };
 
+
+// modules exporting
 module.exports = {
   index,
   signup,

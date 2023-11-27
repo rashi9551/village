@@ -1,7 +1,11 @@
+// modules importing 
 const adminmodel = require("../model/user");
 const categoryModel = require("../model/category_model");
 const bcrypt = require("bcryptjs");
 
+
+
+// admin login page
 const login = async (req, res) => {
   try {
     res.render("admin/adminlogin.ejs");
@@ -10,6 +14,8 @@ const login = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+// admin login action 
 const adminlogin = async (req, res) => {
   try {
     const trues = "true";
@@ -32,6 +38,8 @@ const adminlogin = async (req, res) => {
     res.render("admin/adminlogin", { username: "incorrect username" });
   }
 };
+
+// admin pannel page 
 const adminpannel = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -43,6 +51,8 @@ const adminpannel = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin userlist 
 const userslist = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -57,6 +67,8 @@ const userslist = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin user update 
 const userupdate = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -76,6 +88,8 @@ const userupdate = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin searchuser 
 const searchuser = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -94,6 +108,7 @@ const searchuser = async (req, res) => {
   }
 };
 
+// admin searchview 
 const searchview = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -108,6 +123,7 @@ const searchview = async (req, res) => {
   }
 };
 
+// admin sorting 
 const filter = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -130,6 +146,8 @@ const filter = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin category 
 const category = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -143,6 +161,8 @@ const category = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin new category page
 const newcat = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -154,6 +174,8 @@ const newcat = async (req, res) => {
     console.log(error);
   }
 };
+
+// admin new category adding 
 const addcategory = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -169,6 +191,8 @@ const addcategory = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin category unlisting 
 const unlistcat = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -185,6 +209,8 @@ const unlistcat = async (req, res) => {
     res.send(error);
   }
 };
+
+// admin category update page
 const updatecat = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -199,6 +225,9 @@ const updatecat = async (req, res) => {
     res.send(error);
   }
 };
+
+
+// admin category updating
 const updatecategory = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -218,6 +247,9 @@ const updatecategory = async (req, res) => {
     res.send(error);
   }
 };
+
+
+// admin logout 
 const adlogout = async (req, res) => {
   try {
     if (req.session.isadAuth) {
@@ -232,6 +264,8 @@ const adlogout = async (req, res) => {
   }
 };
 
+
+// module exporting 
 module.exports = {
   adminlogin,
   login,
