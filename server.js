@@ -10,6 +10,8 @@ const adminrouter=require("./server/routers/admin")
 
 
 const app=express()
+app.use(express.json());
+app.use(bodyparser.json()); 
 app.use(bodyparser.urlencoded({extended:true}))
 app.use(nocache())
 app.use(session({

@@ -1,5 +1,5 @@
 // modules importing 
-const userModel = require("../model/user");
+const userModel = require("../model/user_model");
 const otpModel = require("../model/user_otpmodel");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
@@ -205,7 +205,6 @@ const signotp = async (req, res) => {
 const otp = async (req, res) => {
   try {
       res.render("users/otp");
-    
   } catch {
     res.status(200).send("error occured");
   }
@@ -387,6 +386,7 @@ const logout = async (req, res) => {
     res.send("Error Occured");
   }
 };
+
 
 
 // modules exporting

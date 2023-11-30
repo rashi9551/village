@@ -42,6 +42,10 @@
     font-weight: 200;
     margin: 0;
 }
+.passwordForm {
+      display: none;
+      margin-top: 12vh;
+    }
 
 .edit {
     margin-right: 20px;
@@ -180,10 +184,11 @@
         <h4>Saved Addresses</h4>
         <!-- Saved addresses -->
         <ul>
+          <% userData.address.forEach(function(address) { %>
             <li class="address-list">
               <div class="address-section">
                 <div class="address-content">
-                  <p></p>
+                  <p><%= address.saveas %></p>
                   <div class="address-icons">
                     <a class="edit" href="/editaddress/<%= address._id %>"><img src="images/icons8-edit-40.png" alt="Edit Icon"></a>
                     <a class="delete" href="/deleteaddress/<%= address._id %>"><img src="images/icons8-delete-40.png" alt="Delete Icon"></a>
@@ -191,7 +196,7 @@
                 </div>
               </div>
             </li>
-          
+          <% }); %>
         </ul>
         
 
@@ -200,6 +205,7 @@
     </section>
   </div>
 </div>
+
 
  
 
@@ -210,17 +216,22 @@
     <!-- Password management -->
     <p>Email: user@example.com</p>
     <p>Password: ********</p>
-    <button id="changePasswordLink" type="submit" class="btn btn-warning">Change Password</button>
+    <button id="changePasswordLink" type="button" class="btn btn-warning" onclick="togglePasswordForm()">Change Password</button>
     <br><br>
 
     <!-- Password change form -->
-    <form action="/cp" method="post"id="passwordForm">
+    <form action="/cp" method="post" id="passwordForm" class="passwordForm">
       <label for="newPassword">New Password:</label>
       <input type="password" id="newPassword" name="newPassword" required>
-
+      <% if(locals.perror){ %>
+      <div class="alter text-danger text-start"><%= perror %></div>
+      <% } %>
 
       <label for="confirmPassword">Confirm Password:</label>
       <input type="password" id="confirmPassword" name="confirmPassword" required>
+      <% if(locals.cperror){ %>
+      <div class="alter text-danger text-start"><%= cperror %></div>
+      <% } %>
 
       <br><br>
 
@@ -233,7 +244,12 @@
 		<%-include('userpartials/footer')%>
 		
 		<!-- End Footer Section -->	
-
+    <script>
+      function togglePasswordForm() {
+        var passwordForm = document.getElementById('passwordForm');
+        passwordForm.style.display = (passwordForm.style.display === 'block') ? 'none' : 'block';
+      }
+    </script>
 
     
     <script src="js/bootstrap.bundle.min.js"></script>

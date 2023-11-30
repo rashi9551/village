@@ -1,5 +1,5 @@
 // modules importing 
-const adminmodel = require("../model/user");
+const adminmodel = require("../model/user_model");
 const categoryModel = require("../model/category_model");
 const bcrypt = require("bcryptjs");
 
