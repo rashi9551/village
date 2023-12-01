@@ -27,7 +27,7 @@ usrouter.get("/cartpage",session.loged,cartcontroller.showcart)
 usrouter.get("/addtocart/:id",session.loged,cartcontroller.addtocart)
 usrouter.get("/deletcart/:id",session.loged,cartcontroller.deletecart)
 usrouter.post("/update-cart-quantity/:productId",session.loged,cartcontroller.updatecart)
-
+usrouter.get("/checkoutpage",session.loged,cartcontroller.checkoutpage)
 
 
 

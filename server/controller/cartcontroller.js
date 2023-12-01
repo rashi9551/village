@@ -87,37 +87,7 @@ const addtocart=async(req,res)=>{
     }
 }
 
-const updateCartitem=async(req,res)=>{
-    const {userId,sessionId,productId}=req.params
-    const {quantity}=req.body
 
-    try {
-       const cart=await cartModel.findOne({
-        $or:[
-            {userId:userId},
-            {sessionId:sessionId}
-        ]
-       }) 
-       if(!cart){
-        res.status(404).json({message:"cart not found"})
-       }
-       const cartItem = cart.item.find(item => item.productId.toString() === productId);
-       
-       if(!cartItem){
-        return res.status(404).json({ message: 'Product not found in the cart' });
-       }
-       cartItem.quantity=quantity
-       cartItem.total=quantity*cartItem.price
-
-       cart.total=cart.item.reduce((acc,item)=>acc+item.total,0)
-       await cart.save()
-       return res.json(cart);
-
-    } catch (error) {
-        console.log(error);
-        res.send(error)      
-    }
-}
 
 const deletecart=async(req,res)=>{
     try {
@@ -202,12 +172,45 @@ const updatecart=async(req,res)=>{
     }
 }
 
+const checkoutpage=async(req,res)=>{
+    try {
+        const categories=await catModel.find();
+        const cartId=req.query.cartId
+        const userId=req.session.userId
+
+        const addresslist=await userModel.findOne({_id:userId})
+        
+        if(!addresslist){
+            console.log("user not found");
+            return res.status(404).send("user not found")
+
+        }
+        const addresses=addresslist.address;
+        const cart=await cartModel.findById(cartId).populate("item.productId")
+        // console.log("its name:",cart.item[0].productId.name);
+        const cartItems =(cart.item || [].map((cartItem)=>({          
+            productId:cartItem.productId._id,
+            productName:cartItem.productId.name,
+            quantity:cartItem.quantity,
+            itemTotal:cartItem.total,
+        })))
+        console.log("its name aahney:",cartItems);
+
+
+        // console.log("cart total",cart.total);
+        res.render("users/checkout",{addresses,cartItems,categories,cart,cartId})
+
+    } catch (error) {
+        console.log(error);
+        res.send(error) 
+    }
+}
+
 module.exports={
     showcart,
     addtocart,
     deletecart,
-    updatecart
-
-    
+    updatecart,
+    checkoutpage,
 
 }
