@@ -186,9 +186,9 @@ const checkoutpage=async(req,res)=>{
 
         }
         const addresses=addresslist.address;
-        const cart=await cartModel.findById(cartId).populate("item.productId")
+        const cart = await cartModel.findById(cartId).populate('item.productId');
         // console.log("its name:",cart.item[0].productId.name);
-        const cartItems =(cart.item || [].map((cartItem)=>({          
+        const cartItems =(cart.item .map((cartItem)=>({          
             productId:cartItem.productId._id,
             productName:cartItem.productId.name,
             quantity:cartItem.quantity,

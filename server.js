@@ -5,6 +5,8 @@ const path = require('path')
 const nocache=require("nocache")
 const session=require('express-session')
 const multer=require("multer")
+const mongo=require("./config/db")
+const { PORT } = require("./.env")
 
 const adminrouter=require("./server/routers/admin")
 
@@ -48,12 +50,12 @@ app.post('/your-upload-route', upload.array('files'), (req, res) => {
   console.log(req.files);
 });
 
-
+mongo.connect()
 
 app.use("/",router)
 app.use("/admin",adminrouter)
 
 // porting 
-app.listen(3000,()=>{
+app.listen(PORT,()=>{
     console.log("http://localhost:3000 server is running mwoney");
 })

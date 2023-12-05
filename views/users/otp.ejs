@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
         }
+        
 
         .container {
             background-color: transparent;
@@ -57,11 +58,13 @@
 
         #timer {
             font-size: 16px;
+            color: grey; /* Change this line to set the color to light grey */
             position: absolute;
             bottom: 0;
             left: 50%; /* Center the timer horizontally */
             transform: translateX(-50%); /* Center the timer horizontally */
             margin-bottom: 10px;
+
         }
 
         #resendButton {
@@ -111,7 +114,7 @@
         // Function to start or restart the timer
         function startTimer() {
             timerInterval = setInterval(() => {
-                document.getElementById('timer').innerText = `Timer expire in: ${timerValue}`;
+                document.getElementById('timer').innerText = `otp expire in: ${timerValue}`;
 
                 if (timerValue === 0) {
                     timerValue="pls resend otp"

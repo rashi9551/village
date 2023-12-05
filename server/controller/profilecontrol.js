@@ -10,6 +10,7 @@ const {
     confirmpasswordValid,
     passwordValid,
   } = require("../../utils/validators/usersignupvalidators");
+const orderModel = require("../model/order_model");
 
 const userdetails=async(req,res)=>{
     try {
@@ -258,6 +259,51 @@ const changepassword=async(req,res)=>{
         
     }
 }
+
+const orderhistory=async(req,res)=>{
+    try {
+        const userId=req.session.userId;
+        const categories=await catModel.find({})
+        const od=await orderModel.find({userId:userId})
+        const allOrderItems=[];
+        od.forEach(order=> {
+            allOrderItems.push(...order.items)
+            
+        });
+        const orders=await orderModel.aggregate([
+            {
+                $match: {
+                    userId: userId,
+                }
+            },
+            // {
+            //     $unwind: '$items'
+            // },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.productId',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+        ])
+        const updatedOrders = orders.map(order => ({
+            ...order,
+            items: order.items.map(item => ({
+              ...item,
+              productDetails: order.productDetails.find(product => product._id.toString() === item.productId.toString()),
+            })),
+          }));
+        console.log("its orders",orders[0].items);
+        console.log("its orders model",od);
+        console.log("its items",updatedOrders[0].productDetails);
+        res.render("users/orderhistory",{od,orders:updatedOrders,categories,allOrderItems})
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+}
 module.exports={
     userdetails,
     profileEdit,
@@ -267,6 +313,8 @@ module.exports={
     editaddress,
     editaddressupdate,
     deleteAddress,
-    changepassword
+    changepassword,
+    orderhistory,
+
 
 }

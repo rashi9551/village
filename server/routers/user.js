@@ -5,6 +5,7 @@ const session=require("../../middleware/isAuth");
 const { sep } = require("path/posix");
 const profilecontroller=require("../controller/profilecontrol")
 const cartcontroller=require("../controller/cartcontroller")
+const checkoutcontroller=require("../controller/checkoutcontroller")
 
 usrouter.get("/", usercontroller.index);
 usrouter.get("/shop", usercontroller.shop);
@@ -42,6 +43,11 @@ usrouter.get("/editaddress/:addressId",session.loged,profilecontroller.editaddre
 usrouter.post("/updateaddress/:addressId",session.loged,profilecontroller.editaddressupdate)
 usrouter.get("/deleteaddress/:addressId",session.loged,profilecontroller.deleteAddress)
 usrouter.post("/cp",session.loged,profilecontroller.changepassword)
+usrouter.get("/orderhistory",session.loged,profilecontroller.orderhistory)
 
+
+usrouter.post("/checkoutreload",session.loged,checkoutcontroller.checkoutreload)
+usrouter.post("/placeorder",session.loged,checkoutcontroller.placeorder)
+usrouter.post('/create/orderId',session.loged,checkoutcontroller.upi)
 
 module.exports = usrouter;
