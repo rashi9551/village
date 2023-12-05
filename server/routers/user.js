@@ -44,7 +44,11 @@ usrouter.post("/updateaddress/:addressId",session.loged,profilecontroller.editad
 usrouter.get("/deleteaddress/:addressId",session.loged,profilecontroller.deleteAddress)
 usrouter.post("/cp",session.loged,profilecontroller.changepassword)
 usrouter.get("/orderhistory",session.loged,profilecontroller.orderhistory)
-
+usrouter.get("/cancelorder/:id",session.loged,profilecontroller.ordercancelling)
+usrouter.get("/favouritespage",session.loged,profilecontroller.favouritespage)
+usrouter.get("/addtofavourites/:id",session.loged,profilecontroller.addtofavourite)
+usrouter.get("/deletefav/:id",session.loged,profilecontroller.deletefav)
+usrouter.get("/addtocartviafav/:id",session.loged,profilecontroller.addtocartviafav)
 
 usrouter.post("/checkoutreload",session.loged,checkoutcontroller.checkoutreload)
 usrouter.post("/placeorder",session.loged,checkoutcontroller.placeorder)

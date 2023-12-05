@@ -1,6 +1,8 @@
 const catModel=require("../model/category_model")
+const cartModel=require("../model/cart_model")
 const userModel=require("../model/user_model") 
 const bcrypt=require("bcryptjs")
+const favModel=require("../model/favouriteModel")
 
 
 const {
@@ -11,6 +13,8 @@ const {
     passwordValid,
   } = require("../../utils/validators/usersignupvalidators");
 const orderModel = require("../model/order_model");
+const productModel = require("../model/product_model");
+const { category } = require("./admincontroller");
 
 const userdetails=async(req,res)=>{
     try {
@@ -304,6 +308,189 @@ const orderhistory=async(req,res)=>{
         res.send(error)
     }
 }
+
+const ordercancelling=async(req,res)=>{
+    try {
+        const id=req.params.id
+        const update=await orderModel.updateOne({_id:id},{status:"cancelled"})
+        const result=await orderModel.findOne({_id:id})
+        console.log("reslt is",result);
+        const items=result.items.map(item=>({
+            productId:item.productId,
+            quantity:item.quantity,
+        }))
+        for(const item of items){
+            const product=await productModel.findOne({_id:item.productId})
+            product.stock+=item.quantity
+            await product.save()
+        }
+        res.redirect("/orderhistory")
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+
+}
+
+const addtofavourite= async (req, res) => {
+    try {
+      const pid = req.params.id;
+      const product = await productModel.findOne({ _id: pid });
+  
+      const userId = req.session.userId;
+      const price = product.price;
+      const quantity = 1;
+    
+      let fav;
+      if (userId) {
+        fav = await favModel.findOne({ userId: userId });
+      }
+      if (!fav) {
+        fav = await favModel.findOne({ sessionId: req.session.id });
+      }
+  
+      if (!fav) {
+        fav = new favModel({
+          sessionId: req.session.id,
+          item: [],
+          total: 0,
+        });
+      }
+      
+      const productExist = fav.item.findIndex((item) => item.productId == pid);
+      
+      if (productExist !== -1) {
+        fav.item[productExist].quantity += 1;
+        fav.item[productExist].total =
+          fav.item[productExist].quantity * price;
+      } else {
+        const newItem = {
+          productId: pid,
+          price: price,
+        };
+        fav.item.push(newItem);
+      }
+  
+      if (userId && !fav.userId) {
+        fav.userId = userId;
+      }
+  
+      await fav.save();
+      res.redirect('/favouritespage');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error occurred');
+    }
+  }
+  const favouritespage=async(req,res)=>{
+    try {
+      const userId = req.session.userId;
+      const sessionId = req.session.id;
+      const categories = await catModel.find();
+      let fav;
+  
+      if (userId) {
+          fav = await favModel.findOne({ userId: userId }).populate({
+              path: 'item.productId',
+              select: 'images name price',
+          });
+      } else {
+          fav = await favModel.findOne({ sessionId: sessionId }).populate({
+              path: 'item.productId',
+              select: 'images name price',
+          });
+      }
+  
+      
+      if (!fav || !fav.item) {
+            cart = new favModel({
+              sessionId: req.session.id,
+              item: [],
+              total: 0,
+            });
+      }
+  
+      res.render('users/favourites.ejs', { fav, categories });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Error occurred');
+  }
+    
+  }
+
+  const deletefav=async(req,res)=>{
+    try {
+        const userId=req.session.userId
+        const pid=req.params.id
+        const result=await favModel.updateOne({userId:userId},{$pull:{item:{_id:pid}}})
+        const updatefav=await favModel.findOne({userId:userId});
+        const newTotal=updatefav.item.reduce((acc,item)=>acc+item.total,0)
+        updatefav.total=newTotal;
+        await updatefav.save();
+        res.redirect("/favouritespage")
+    } catch (error) {
+        console.error(err);
+        res.status(500).send('Error occurred');
+    }
+  }
+  const addtocartviafav=async(req,res)=>{
+    try {
+        const pid = req.params.id;
+    const product = await productModel.findOne({ _id: pid });
+
+    const userId = req.session.userId;
+    const price = product.price;
+    const stock= product.stock;
+    const quantity = 1;
+    console.log("session id",req.session.id)
+    let cart;
+    if (userId) {
+      cart = await cartModel.findOne({ userId: userId });
+    }
+    if (!cart) {
+      cart = await cartModel.findOne({ sessionId: req.session.id });
+    }
+
+    if (!cart) {
+        console.log("creating a new cart");
+      cart = new cartModel({
+        sessionId: req.session.id,
+        item: [],
+        total: 0,
+      });
+    }
+    
+    const productExist = cart.item.findIndex((item) => item.productId == pid);
+    
+    if (productExist !== -1) {
+      cart.item[productExist].quantity += 1;
+      cart.item[productExist].total =
+        cart.item[productExist].quantity * price;
+    } else {
+      const newItem = {
+        productId: pid,
+        quantity: 1,
+        price: price,
+        stock :stock,
+        total: quantity * price,
+      };
+      cart.item.push(newItem);
+    }
+
+    if (userId && !cart.userId) {
+      cart.userId = userId;
+    }
+
+    cart.total = cart.item.reduce((acc, item) => acc + item.total, 0);
+
+    await cart.save();
+    res.redirect('/cartpage');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error occurred');
+    }
+  }
+
 module.exports={
     userdetails,
     profileEdit,
@@ -315,6 +502,12 @@ module.exports={
     deleteAddress,
     changepassword,
     orderhistory,
+    ordercancelling,
+    addtofavourite,
+    favouritespage,
+    deletefav,
+    addtocartviafav
+
 
 
 }
