@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +9,76 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="/css/tiny-slider.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.3/tiny-slider.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- ElevateZoom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-elevatezoom/3.0.8/jquery.elevatezoom.min.css">
+
     <style>
 
+.custom-image {
+    width: 300px; /* Set the desired width */
+    height: 200px; /* Set the desired height */
+  }
+ 
 
+  .product-details-section {
+            width: calc(55% - 25px); /* Adjusted width with right margin */
+            padding: 20px;
+            text-align: left;
+            background-color: #fff; /* Set the background color you want */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add box shadow for a card-like appearance */
+            margin-right: 25px; /* Right margin */
+            z-index: 2; /* Ensure the product details card is above the images */
+        }
+
+        /* Tiny Slider Container */
+        #product-slider {
+            position: relative;
+            overflow: hidden;
+        }
+
+   
+
+
+
+
+
+
+        .product-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 20px;
+        }
+
+        .product-images {
+            width: 40%;
+        }
+
+        .product-images img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: border 0.3s ease-in-out;
+        }
+
+        .product-images img:hover {
+            border-color: #3498db;
+        }
+
+        .product-details {
+            width: 55%;
+            padding: 20px;
+            text-align: left;
+        }
 
         .image-gallery {
             display: flex;
@@ -46,39 +113,40 @@
             margin-bottom: 10px;
             color: #333;
         }
+
         .category-options {
-      display: none;
-    }
-    .search-bar {
-      background-color: #3b5d50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 35px;
-      margin: 0;
-      display: flex;
-      border: 2px solid #efeeee;
-      border-radius: 30px;
-      overflow: hidden;
-    }
+            display: none;
+        }
 
-    .search-input {
-      border: none;
-      padding: 10px;
-      width: 800px;
-      background-color: #3b5d50;
-      color: white;
-    }
+        .search-bar {
+            background-color: #3b5d50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 35px;
+            margin: 0;
+            border: 2px solid #efeeee;
+            border-radius: 30px;
+            overflow: hidden;
+        }
 
-    .search-button {
-      background-color: #3d5d50;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      cursor: pointer;
-    }
+        .search-input {
+            border: none;
+            padding: 10px;
+            width: 800px;
+            background-color: #3b5d50;
+            color: white;
+        }
+
+        .search-button {
+            background-color: #3d5d50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            cursor: pointer;
+        }
 
         .price {
             font-size: 1.5rem;
@@ -106,7 +174,8 @@
             color: white;
             text-align: center;
         }
-        .det{
+
+        .det {
             padding-top: 2cm;
         }
 
@@ -116,78 +185,232 @@
             text-align: center;
             margin-top: auto;
         }
-        .fulldiv{
+
+        .fulldiv {
             width: 100vw;
-
         }
-        .product-image{
+
+        .product-image {
             width: 500px;
-        
         }
-
     </style>
 </head>
+
 <body>
 
-    <%-include('userpartials/nav')%>
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
 
-<div class="fulldiv  my-5 d-flex justify-content-center">
-<div>
-    <div class="product-image">
-    <img class="img-fluid" src="/<%= product.images[0] %>" alt="<%= product.name %> Image" id="mainImage">
+        <div class="container">
+            <a class="navbar-brand" href="/">Furnify<span>.</span></a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni"
+                aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsFurni">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search...">
+                    <button class="search-button"><img src="/images/searcharrow.png"></button>
+                </div>
+
+                <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+                    <li><a class="nav-link" href="/"><img src="/images/homesvg.svg"></a></li>
+                    <li><a class="nav-link" href="/profile"><img src="/images/user.svg"></a></li>
+                    <li><a class="nav-link" href="/"><img src="/images/cart.svg"></a></li>
+                </ul>
+            </div>
+        </div>
+
+    </nav>
+    <div class="select-line" style="background-color: #3b5d50;">
+        <ul class="custom-horizontal-list navbar-nav ms-auto mb-2 mb-md-0"
+            style="display: flex; list-style: none; flex-direction: row; justify-content: center; gap: 23px;">
+            <% categories.filter(category => category.status !== false).forEach(category => { %>
+            <li class="nav-item">
+                <a class="nav-link" href="/shop?category=<%= category._id %>"
+                    style="color: #F0EAD6; font-size: 150%;">
+                    <%= category.name %>
+                </a>
+            </li>
+            <% }); %>
+
+        </ul>
     </div>
-    <div class="image-gallery my-5 d-flex justify-content-center">
-        <% product.images.forEach((image, index) => { %>
-            <img src="/<%= image %>" alt="<%= product.name %> Image" onclick="showImage('/<%= image %>')" />
-        <% }); %>
-    </div>
+    <div class="fulldiv my-5 d-flex justify-content-center">
+        <div class="product-container">
+            <div class="product-images">
+                
+                <div id="product-slider" class="tns-slider">
+                    <% product.images.forEach((image, index) => { %>
+                        <img src="/<%= image %>" alt="<%= product.name %> Image" class="img-fluid" style=" height: 600px;" />
+                    <% }); %>
+                </div>
+            </div>
 
-    <div class="product-details">
-        <h1><%= product.name %></h1>
-        <p class="price">Rs.<%= product.price.toFixed(2) %></p>
-
-
-        <div class="description">
-            <p><strong>Description:</strong></p>
-            <p><%= product.description %></p>
+            <!-- Product Details Section -->
+            <div class="product-details-section">
+                <h1><%= product.name %></h1>
+                <p class="price">Rs.<%= product.price.toFixed(2) %></p>
+                <div class="description">
+                    <p><strong>Description:</strong></p>
+                    <p><%= product.description %></p>
+                </div>
+                <div class="buttons-row">
+                    <% if (product.stock > 0) { %>
+                        <a href="/addtocart/<%= product._id %>"><button class="btn btn-primary">
+                                <span class="fas fa-shopping-cart"></span> Add to Cart
+                            </button></a>
+                    <% } else { %>
+                        <button class="btn btn-danger" disabled>
+                            Out of Stock
+                        </button>
+                    <% } %>
+                    <a href="/addtofavourites/<%=product._id%>"><button class="btn btn-secondary">
+                            <span class="fas fa-heart"></span> Add to Wishlist
+                        </button></a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
-   <!-- Add to Cart Button -->
-   <a href="/addtocart/<%= product._id %>"><button class="btn btn-primary">
-    <span class="fas fa-shopping-cart"></span> Add to Cart
-</button>
-</a>
 
-<!-- Add to Wishlist Button -->
-<a href="/addtofavourites/<%= product._id %>"><button class="btn btn-secondary" onclick="addToWishlist('<%= product._id %>')">
-    <span class="fas fa-heart"></span> Add to Wishlist
-</button>
-</a>
+    <footer>
+        <!-- Start Footer Section -->
+        <footer class="footer-section">
+            <div class="container relative">
 
-   
-		<!-- Start Footer Section -->
-		<%-include('userpartials/footer')%>
-		<!-- End Footer Section -->	
+                <div class="sofa-img">
+                    <img src="/images/sofa.png" alt="Image" class="img-fluid">
+                </div>
 
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="subscription-form">
+                            <h3 class="d-flex align-items-center"><span class="me-1"><img
+                                        src="/images/envelope-outline.svg" alt="Image" class="img-fluid"></span><span>Subscribe
+                                    to Newsletter</span></h3>
 
+                            <form action="#" class="row g-3">
+                                <div class="col-auto">
+                                    <input type="text" class="form-control" placeholder="Enter your name">
+                                </div>
+                                <div class="col-auto">
+                                    <input type="email" class="form-control" placeholder="Enter your email">
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary">
+                                        <span class="fa fa-paper-plane"></span>
+                                    </button>
+                                </div>
+                            </form>
 
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-5 mb-5">
+                    <div class="col-lg-4">
+                        <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Furnify<span>.</span></a></div>
+                        <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus
+                            malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor
+                            tristique. Pellentesque habitant</p>
+
+                        <ul class="list-unstyled custom-social">
+                            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+                            <li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+                            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+                            <li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="row links-wrap">
+                            <div class="col-6 col-sm-6 col-md-3">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">About us</a></li>
+                                    <li><a href="#">Services</a></li>
+                                    <li><a href="#">Blog</a></li>
+                                    <li><a href="#">Contact us</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-3">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">Support</a></li>
+                                    <li><a href="#">Knowledge base</a></li>
+                                    <li><a href="#">Live chat</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-3">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">Jobs</a></li>
+                                    <li><a href="#">Our team</a></li>
+                                    <li><a href="#">Leadership</a></li>
+                                    <li><a href="#">Privacy Policy</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="col-6 col-sm-6 col-md-3">
+                                <ul class="list-unstyled">
+                                    <li><a href="#">Nordic Chair</a></li>
+                                    <li><a href="#">Kruzo Aero</a></li>
+                                    <li><a href="#">Ergonomic Chair</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="border-top copyright">
+                    <div class="row pt-4">
+                        <div class="col-lg-6">
+                            <p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new
+                                    Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed with love by <a
+                                    href="https://untree.co">Untree.co</a> Distributed By <a
+                                    href="https://themewagon.com">ThemeWagon</a> <!-- License information:
+                                    https://untree.co/license/ --> </p>
+                        </div>
+
+                        <div class="col-lg-6 text-center text-lg-end">
+                            <ul class="list-unstyled d-inline-flex ms-auto">
+                                <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+        <!-- End Footer Section -->
+
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/tiny-slider.js"></script>
+    <script src="https://cdn.rawgit.com/elevateweb/elevatezoom/master/src/jquery.elevatezoom.js"></script>
+    <script src="/js/custom.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.3/min/tiny-slider.js"></script>
     <script>
-
-
-        function showImage(imageUrl) {
-            document.getElementById('mainImage').src = imageUrl;
-        }
-
-
-        function showImage(imageUrl) {
-            document.getElementById('mainImage').src = imageUrl;
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            var slider = tns({
+                container: '#product-slider',
+                items: 1,
+                slideBy: 'page',
+                autoplay: false,
+                controls: true,
+                nav: false,
+             
+            });
+        });
     </script>
-    		<script src="/js/bootstrap.bundle.min.js"></script>
-            <script src="/js/tiny-slider.js"></script>
-            <script src="/js/custom.js"></script>
 
+    
+       
 </body>
+
 </html>
