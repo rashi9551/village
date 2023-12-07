@@ -3,6 +3,7 @@ const admincontroller=require("../controller/admincontroller")
 const admminrouter=express.Router()
 const productcontroller=require("../controller/productcontroller")
 const sessions=require("../../middleware/isadAuth")
+const ordercontroller=require("../controller/ordercontrol")
 
 const multer=require('multer')
 const session = require("express-session")
@@ -46,8 +47,8 @@ admminrouter.get("/deleteimg",sessions.adisAuth,productcontroller.deleteimg)
 admminrouter.post("/updateimg/:id",sessions.adisAuth,upload.array('images'),productcontroller.updateimg)
 admminrouter.post("/updateproduct/:id",sessions.adisAuth,productcontroller.updateproduct)
 
-
-
+admminrouter.get("/orderPage",sessions.adisAuth,ordercontroller.orderPage)
+admminrouter.post("/updateOrderStatus",sessions.adisAuth,ordercontroller.updateorderstatus)
 
 
 

@@ -2,6 +2,7 @@
 const adminmodel = require("../model/user_model");
 const categoryModel = require("../model/category_model");
 const bcrypt = require("bcryptjs");
+// const session=require("../../middleware")
 
 
 
@@ -53,7 +54,7 @@ const adminpannel = async (req, res) => {
 const userslist = async (req, res) => {
   try {
       const user = await adminmodel.find({});
-      console.log(user);
+      // console.log(user);
       res.render("admin/userslist", { users: user });
   } catch (error) {
     console.log(error);
@@ -70,6 +71,11 @@ const userupdate = async (req, res) => {
         return res.status(404).json({ message: "User not found" });
       }
       user.status = !user.status;
+      if(user.status)
+      {
+        req.session.isAuth=false;
+      }
+
       await user.save();
       res.redirect("/admin/userslist");
    
