@@ -118,9 +118,9 @@ const placeorder=async(req,res)=>{
             totalPrice:parseInt(req.body.carttotal),
             shippingAddress:selectedAddress,
             paymentMethod:paymentMethod,
+            updatedAt:new Date(),
             createdAt:new Date(),
             status:"pending",
-            updateAt:null,
         })
 
         console.log("items",items);

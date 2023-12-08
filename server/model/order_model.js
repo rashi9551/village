@@ -52,6 +52,8 @@ const orderSchema= new Schema({
         },
         updatedAt:{
             type:Date,
+            required:true,
+            
         }
 })
 

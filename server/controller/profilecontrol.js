@@ -296,12 +296,12 @@ const orderhistory=async(req,res)=>{
             ...order,
             items: order.items.map(item => ({
               ...item,
-              productDetails: order.productDetails.find(product => product._id.toString() === item.productId.toString()),
+            productDetails: order.productDetails.find(product => product._id.toString() === item.productId.toString()),
             })),
           }));
         console.log("its orders",orders[0].items);
         console.log("its orders model",od);
-        console.log("its items",updatedOrders[0].productDetails);
+        console.log("its items",orders[0]);
         res.render("users/orderhistory",{od,orders:updatedOrders,categories,allOrderItems})
     } catch (error) {
         console.log(error);
