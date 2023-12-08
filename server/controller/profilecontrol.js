@@ -312,7 +312,7 @@ const orderhistory=async(req,res)=>{
 const ordercancelling=async(req,res)=>{
     try {
         const id=req.params.id
-        const update=await orderModel.updateOne({_id:id},{status:"cancelled"})
+        const update=await orderModel.updateOne({_id:id},{status:"cancelled",updatedAt:Date.now()})
         const result=await orderModel.findOne({_id:id})
         console.log("reslt is",result);
         const items=result.items.map(item=>({
@@ -343,6 +343,30 @@ const singleOrderPage=async(req,res)=>{
         res.send(error)
     }
 }
+const orderReturn=async(req,res)=>{
+    try {
+        const userId=req.session.userId
+        const id=req.params.id
+        const update=await orderModel.updateOne({_id:id},{status:"Returned",updatedAt:Date.now()})
+        const order=await orderModel.findOne({_id:id})
+        const user=await userModel.findOne({_id:userId})
+        const result=await orderModel.findOne({_id:id})
+        const items=result.items.map(item=>({
+            productId:item.productId,
+            quantity:item.quantity,
+        }))
+        for(const item of items){
+            const product=await productModel.findOne({_id:item.productId})
+            product.stock+=item.quantity
+            await product.save()
+        }
+        res.redirect("/orderhistory")
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+}
+
 
 const addtofavourite= async (req, res) => {
     try {
@@ -520,7 +544,8 @@ module.exports={
     deletefav,
     addtocartviafav,
     singleOrderPage,
-    
+    orderReturn
+
 
 
 

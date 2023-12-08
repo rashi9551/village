@@ -4,6 +4,7 @@ const orderPage=async(req,res)=>{
     try {
         const orders=await orderModel.find({}).sort({createdAt:-1});
         res.render("admin/orderpage",{orderdata:orders})
+        console.log(orders);
     } catch (error) {
         console.log(error);
     }
