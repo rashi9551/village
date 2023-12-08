@@ -332,6 +332,18 @@ const ordercancelling=async(req,res)=>{
 
 }
 
+const singleOrderPage=async(req,res)=>{
+    try {
+        const id=req.params.id
+        const order = await orderModel.findOne({_id:id})
+        const categories=await catModel.find({})
+        res.render("users/orderDetails",{categories,order})
+    } catch (error) {
+        console.log(error);
+        res.send(error)
+    }
+}
+
 const addtofavourite= async (req, res) => {
     try {
       const pid = req.params.id;
@@ -506,7 +518,9 @@ module.exports={
     addtofavourite,
     favouritespage,
     deletefav,
-    addtocartviafav
+    addtocartviafav,
+    singleOrderPage,
+    
 
 
 
