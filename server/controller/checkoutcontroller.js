@@ -7,8 +7,8 @@ const bcrypt=require("bcryptjs")
 const mongoose =require("mongoose")
 const Razorpay=require("razorpay")
 const shortid = require("shortid")
-const {key_id,key_secret}=require('../../.env')
-;
+const {key_id,key_secret}=require('../../.env');
+const couponModel=require("../model/coupon_model")
 
 
 const checkoutreload=async(req,res)=>{
@@ -162,11 +162,36 @@ const upi = async (req, res) => {
     })
 }
 
+const applyCoupon=async(req,res)=>{
+    try {
+        const {couponCode,subtotal}=req.body
+        const coupon =await couponModel.findOne({couponCode:couponCode});
+        console.log(coupon);
+        if(!coupon){
+            res.json({success:false})
+        }
+        else if(coupon.expiry > new Date() && coupon.minimumPrice<=subtotal){
+            console.log("cp nokkunnu");
+            const dicprice=(subtotal*coupon.discount)/100
+            const price=subtotal-dicprice;
+            console.log(price);
+            res.json({success:true,price})
+        }
+        else{
+            res.json({success:false,message:"invalid coupon"})
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 
 module.exports={
     checkoutreload,
     placeorder,
-    upi
+    upi,
+    applyCoupon
 
 }

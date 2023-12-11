@@ -4,9 +4,11 @@ const admminrouter=express.Router()
 const productcontroller=require("../controller/productcontroller")
 const sessions=require("../../middleware/isadAuth")
 const ordercontroller=require("../controller/ordercontrol")
+const couponcontroller=require("../controller/couponcontroller")
 
 const multer=require('multer')
 const session = require("express-session")
+const { copy } = require("./user")
 const upload=multer({dest:'uploads/'})
 const app=express();
 
@@ -50,6 +52,9 @@ admminrouter.post("/updateproduct/:id",sessions.adisAuth,productcontroller.updat
 admminrouter.get("/orderPage",sessions.adisAuth,ordercontroller.orderPage)
 admminrouter.post("/updateOrderStatus",sessions.adisAuth,ordercontroller.updateorderstatus)
 
+admminrouter.get('/couponList',sessions.adisAuth,couponcontroller.couponList)
+admminrouter.get('/newcoupon',sessions.adisAuth,couponcontroller.addcouponpage)
+admminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
 
 
 

@@ -285,13 +285,13 @@ const login = async (req, res) => {
       req.session.username = user.username;
       req.session.isAuth = true;
       res.redirect("/");
-    } else {
-      // Authentication failed
-      res.render("users/signin", { passworderror: "incorrect password" });
+    } else{
+      res.render("users/signin", { passworderror: "incorrect passwordor/username" });
     }
+      // Authentication failed
   } catch (error) {
-    // Error occurred, could be due to user not found or other issues
-    res.render("users/signin", { username: "incorrect username" });
+    res.render("users/signin", { passworderror: "incorrect passwordor/username" });
+
   }
 };
 const forgotpassword = async (req, res) => {

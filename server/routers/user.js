@@ -53,8 +53,12 @@ usrouter.get("/addtofavourites/:id",loged,profilecontroller.addtofavourite)
 usrouter.get("/deletefav/:id",loged,profilecontroller.deletefav)
 usrouter.get("/addtocartviafav/:id",loged,profilecontroller.addtocartviafav)
 
+
+usrouter.post("/applyCoupon",checkoutcontroller.applyCoupon)
 usrouter.post("/checkoutreload",loged,checkoutcontroller.checkoutreload)
 usrouter.post("/placeorder",loged,checkoutcontroller.placeorder)
 usrouter.post('/create/orderId',loged,checkoutcontroller.upi)
+
+
 
 module.exports = usrouter;
