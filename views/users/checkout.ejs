@@ -1,4 +1,10 @@
-
+<!-- /*
+* Bootstrap 5
+* Template Name: Furni
+* Template Author: Untree.co
+* Template URI: https://untree.co/
+* License: https://creativecommons.org/licenses/by/3.0/
+*/ -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -29,7 +35,7 @@
         }
 
         .larger-text {
-            font-size: 16px; /* Adjust the size as needed */
+            font-size: 16px; 
 
         }
 
@@ -154,8 +160,6 @@
 
 
 		            <div class="form-group">
-		              <label for="c_ship_different_address" class="text-black" data-bs-toggle="collapse" href="#ship_different_address" role="button" aria-expanded="false" aria-controls="ship_different_address"><input type="checkbox" value="1" id="c_ship_different_address">Add a new Address</label>
-		              <div class="collapse" id="ship_different_address">
 						<div class="suso container mt-4">
 							<div class="edit-profile-form">
 							  <h2>Add New Address</h2>
@@ -217,7 +221,6 @@
 							</div>
 						  </div>
 
-		              </div>
 		            </div>
 
 		          </div>
@@ -234,6 +237,9 @@
 		                  <input type="text" class="form-control me-2" id="c_code" placeholder="Coupon Code" aria-label="Coupon Code" aria-describedby="button-addon2">
 		                  <div class="input-group-append">
 		                    <button class="btn btn-black btn-sm" type="button" id="button-addon2" onclick="couponApply()">Apply</button>
+		                  </div>
+						  <div >
+		                    <button style="color: black;border: solid black;margin-left: 3px;" class="btn btn-white-outline btn-sm" type="button" id="button-addon3" onclick="couponRevoke()">Clear</button>
 		                  </div>
 		                </div>
 					</form>
@@ -264,12 +270,18 @@
 		                    <tr>
 		                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
 							  <td></td>
-		                      <td id="subt" class="text-black"><%= cart.total %></td>
+							  
+		                      <td id="subt" style="font-weight: 700;"><%= cart.total %></td>
 		                    </tr>
+							<tr>
+								<td class="text-black font-weight-bold"><strong>Discount Amount</strong></td>
+								<td></td>
+								<td id="dicprice" style="color: green; font-weight: 500;">0</td>
+							</tr>
 		                    <tr>
-		                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+		                    <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
 							  <td></td>
-		                      <td id="cartotal" class="text-black font-weight-bold"><strong><mark>
+		                      <td id="cartotal" style="font-weight: 700;"><strong><mark>
 								<%= cart.total %></mark></strong></td>
 		                    </tr>
 						
@@ -285,7 +297,12 @@
 							<label>
 							  <input type="radio" name="paymentOption" value="Razorpay" id="paymentOption2" onchange="updateHiddenField(this)">
 							  Razorpay
-							</label><br><br>
+							</label><br>
+
+							<label>
+								<input type="radio" name="paymentOption" value="Wallet" id="paymentOption3" onchange="updateHiddenField(this)">
+							  Wallet
+							  </label><br><br>
 						
 							
 							
@@ -310,12 +327,12 @@
 							<input type="hidden" name="cartId" value="<%= cart._id %>">
 
 							<div class="form-group">
-								<button class="btn btn-black btn-lg py-3 btn-block" type="button" onclick="razorpay()">Place Order</button>
+							<button class="btn btn-black btn-lg py-3 btn-block" type="button" onclick="razorpay()">Place Order</button>
 							</div>
 						</form>
 		
 
-		              </div>
+	</div>
 		            </div>
 		          </div>
 
@@ -332,21 +349,11 @@
 		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 		<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
-		
-
-		
-
 <script>
-			// Script for handling address selection
 			$(document).ready(function () {
 				$('.address-radio').change(function () {
-					// Get the selected address ID from the data attribute
 					var selectedAddressId = $(this).data('address-id');
-					
-					
 					$('#selectedAddressId').val(selectedAddressId)
-					// Hide other address details (if needed)
 					$('.address-details').slideUp();
 					$(this).closest('.address-item').find('.address-details').slideDown();
 				});
@@ -356,7 +363,7 @@
 			}
 			</script>
 			<script>
-	function razorpay()
+	async function  razorpay()
 	{
 		let amountToPay=document.getElementById('cartotal').innerText
 		var pay=document.querySelector('input[name="paymentOption"]:checked');
@@ -383,7 +390,6 @@
 		}
 		else if(!addressTo){
 			Swal.fire({
-//   title: 'Error!',
   text: 'please select an address',
   icon: 'error',
   confirmButtonText: 'OK',
@@ -436,7 +442,7 @@ rzp1.on('payment.failed', function (response){
         alert(response.error.metadata.order_id);
         alert(response.error.metadata.payment_id);
 });
- rzp1.open();
+    rzp1.open();
 
 
     e.preventDefault();
@@ -456,7 +462,7 @@ $(document).ready(function(){
   }),
 };
 ;
-//creates new orderId everytime
+
 $.ajax(settings).done(function (response) {
 
   orderId=response.orderId;
@@ -467,6 +473,48 @@ $.ajax(settings).done(function (response) {
 
                 
             }
+		 else if (pay.value === 'Wallet') {
+    console.log("coooococococococ");
+    try {
+      const response = await fetch('/wallettransaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: amountToPay
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log(pay.value, "000000");
+        document.getElementById('orderForm').action = '/placeOrder';
+        document.getElementById('orderForm').method = 'post';
+        document.getElementById('orderForm').submit();
+      } else {
+        console.log("cccc");
+        Swal.fire({
+          text: "You Don't have Enough money in Wallet",
+          icon: 'error',
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'text-danger',
+            popup: 'swal2-popup-custom',
+            confirmButton: 'btn btn-danger'
+          },
+          showCancelButton: false,
+          showCloseButton: true,
+          showLoaderOnConfirm: false,
+          timer: 3000
+        });
+        console.log("came else but....");
+      }
+    } catch (error) {
+      console.error("An error occurred during wallet transaction:", error);
+      // Handle the error as needed
+    }}
 			else{
 				console.log("jwDQJWD");
 				document.getElementById('orderForm').action = '/placeOrder';
@@ -477,8 +525,6 @@ document.getElementById('orderForm').submit();
 			
 		}
 		}
-		
-    
 
 		</script>
 		<script>
@@ -497,44 +543,28 @@ function couponApply() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-			Swal.fire({
-				text:"Coupon Applied Succefully",
-				icon:'success',
-				confirmButtonText:'OK',
-				customClass:{
-					title:"text-danger",
-					popup:"swal2-popup-custom",
-					confirmButton:"'btn btn-dange"
-				},
-                showCancelButton: false,
-                showCloseButton: true,
-                showLoaderOnConfirm: false,
-                timer: 3000 
-			})
 			console.log("ivideumethi")
+			document.getElementById('dicprice').innerText="-"+data.dicprice
            document.getElementById('cartotal').innerText=data.price
 		   document.getElementById('carttotal').value=data.price
-		   
 
 
-            // Update the Order Total dynamically
-            // const orderTotalElement = document.querySelector('.orderTotal');
-            // orderTotalElement.innerHTML = `<strong>$${data.totalAmount}</strong>`;
+       
         } else {
 			Swal.fire({
-				text:"invalid coupon code",
-				icon:'error',
-				confirmButtonText:'OK',
-				customClass:{
-					title:"text-danger",
-					popup:"swal2-popup-custom",
-					confirmButton:"'btn btn-danger"
-				},
-                showCancelButton: false,
-                showCloseButton: true,
-                showLoaderOnConfirm: false,
-                timer: 3000 
-			})
+          text: "Invalid Coupon",
+          icon: 'error',
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'text-danger',
+            popup: 'swal2-popup-custom',
+            confirmButton: 'btn btn-danger'
+          },
+          showCancelButton: false,
+          showCloseButton: true,
+          showLoaderOnConfirm: false,
+          timer: 3000
+        });
         }
     })
     .catch(error => {
@@ -542,6 +572,12 @@ function couponApply() {
         alert('An error occurred while applying the coupon. Please try again.');
     });
 }
+
+    function couponRevoke() {
+        
+        location.reload();
+    }
+
 
 		</script>
 		

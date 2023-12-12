@@ -9,6 +9,7 @@ const Razorpay=require("razorpay")
 const shortid = require("shortid")
 const {key_id,key_secret}=require('../../.env');
 const couponModel=require("../model/coupon_model")
+const walletModel = require("../model/wallet_Model")
 
 
 const checkoutreload=async(req,res)=>{
@@ -162,29 +163,65 @@ const upi = async (req, res) => {
     })
 }
 
+const wallettransaction=async(req,res)=>{
+    try {
+        console.log("ibda indu mwoney");
+        const userid=req.session.userId;
+        const amount=req.body.amount
+        const user=await walletModel.findOne({userId:userid})
+        console.log(userid);
+        const wallet=user.wallet
+        console.log("ithu wallet",wallet);
+        
+        if(user.wallet>=amount){
+            user.wallet-=amount
+            await user.save()
+            const wallet=await walletModel.findOne({userId:userid})
+            wallet.walletTransactions.push({type:'Debited',
+            amount:amount,
+            date:new Date()
+        })
+        await wallet.save();
+        res.json({success:true})
+        }
+        else
+        {
+            res.json({success:false,message:'dont have enought money'})
+        }
+    } catch (error) {
+        console.log(error);
+        res.send(error) 
+    }
+}
+
 const applyCoupon=async(req,res)=>{
     try {
         const {couponCode,subtotal}=req.body
         const coupon =await couponModel.findOne({couponCode:couponCode});
         console.log(coupon);
-        if(!coupon){
-            res.json({success:false})
-        }
-        else if(coupon.expiry > new Date() && coupon.minimumPrice<=subtotal){
+        if(coupon){
+         if(coupon.expiry > new Date() && coupon.minimumPrice<=subtotal){
             console.log("cp nokkunnu");
             const dicprice=(subtotal*coupon.discount)/100
             const price=subtotal-dicprice;
             console.log(price);
-            res.json({success:true,price})
+            res.json({success:true,dicprice,price})
         }
         else{
             res.json({success:false,message:"invalid coupon"})
         }
+    }
+    else{
+        res.json({success:false,message:"coupon not found"})
+    }
         
     } catch (error) {
         console.log(error);
+        res.status(500).send('Error occurred');
     }
 }
+
+
 
 
 
@@ -192,6 +229,7 @@ module.exports={
     checkoutreload,
     placeorder,
     upi,
-    applyCoupon
+    applyCoupon,
+    wallettransaction
 
 }

@@ -52,10 +52,13 @@ usrouter.get("/favouritespage",loged,profilecontroller.favouritespage)
 usrouter.get("/addtofavourites/:id",loged,profilecontroller.addtofavourite)
 usrouter.get("/deletefav/:id",loged,profilecontroller.deletefav)
 usrouter.get("/addtocartviafav/:id",loged,profilecontroller.addtocartviafav)
-
+usrouter.get('/wallet',loged,profilecontroller.wallet)
+usrouter.post('/walletcreate/orderId',loged,profilecontroller.walletupi)
+usrouter.post('/walletTopup',loged,profilecontroller.walletTopup)
 
 usrouter.post("/applyCoupon",checkoutcontroller.applyCoupon)
 usrouter.post("/checkoutreload",loged,checkoutcontroller.checkoutreload)
+usrouter.post('/wallettransaction',loged,checkoutcontroller.wallettransaction)
 usrouter.post("/placeorder",loged,checkoutcontroller.placeorder)
 usrouter.post('/create/orderId',loged,checkoutcontroller.upi)
 

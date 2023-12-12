@@ -24,6 +24,12 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <style>
+    .alert{
+    color: rgb(179, 49, 49);
+    text-align: center;
+    font-size: 44px;
+    
+   }
     .category-options {
       display: none;
     }
@@ -132,6 +138,9 @@
 				  </tr>
 				</thead>
 				<tbody>
+          <% if(locals.message){%>
+            <div class="alert"><%= message%></div>
+        <%}%>
 				  <% if (cart && cart.item && cart.item.length > 0) { %>
 					<% cart.item.forEach((item, index) => { %>
 					  <tr>

@@ -221,13 +221,13 @@
 
     <!-- Password change form -->
     <form action="/cp" method="post" id="passwordForm" class="passwordForm">
-      <label for="newPassword">New Password:</label>
+      <label for="newPassword">Enter old Password:</label>
       <input type="password" id="newPassword" name="newPassword" required>
       <% if(locals.perror){ %>
       <div class="alter text-danger text-start"><%= perror %></div>
       <% } %>
 
-      <label for="confirmPassword">Confirm Password:</label>
+      <label for="confirmPassword">New Password:</label>
       <input type="password" id="confirmPassword" name="confirmPassword" required>
       <% if(locals.cperror){ %>
       <div class="alter text-danger text-start"><%= cperror %></div>
