@@ -31,22 +31,34 @@ const newproduct = async (req, res) => {
 // new adding product  
 const addproduct = async (req, res) => {
   try {
-    const { productName, parentCategory, images, stock, price, description } =
-      req.body;
-    console.log(
-      "its yt",
-      req.files.map((file) => file.path)
-    );
-    const newproduct = new productModel({
-      name: productName,
-      category: parentCategory,
-      price: price,
-      stock: stock,
-      images: req.files.map((file) => file.path),
-      description: description,
-    });
-    await newproduct.save();
-    res.redirect("/admin/product");
+    const { productName, parentCategory, images,productType, stock,price, description , mrp,height,width,sidelength,weight,madeOf,color,manufacturer} = req.body
+
+
+
+        const newproduct = new productModel({
+            name: productName,
+            category: parentCategory,
+            type:productType,
+            price: price,
+            images: req.files.map(file => file.path),
+            stock: stock,
+            description: description,
+            mrp:mrp,
+            height:height,
+            weight:weight,
+            width:width,
+            sidelength:sidelength,
+            madeOf:madeOf,
+            manufacturer:manufacturer,
+            color:color
+
+        })
+
+        console.log(parentCategory)
+        await categoryModel.updateOne({_id:parentCategory} ,{ $addToSet: { types: productType } },{ upsert: true })
+
+        await newproduct.save()
+        res.redirect('/admin/product')
   } catch (error) {
     console.log(error);
     res.send(error);

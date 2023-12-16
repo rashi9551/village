@@ -10,6 +10,9 @@ const {loged,signforgot,forgot,logedtohome}=session
 
 usrouter.get("/", usercontroller.index);
 usrouter.get("/shop", usercontroller.shop);
+usrouter.post("/searchProducts",usercontroller.searchProducts)
+usrouter.get('/filterProducts',usercontroller.filterProducts)
+usrouter.get("/sortProducts",usercontroller.sortProducts)
 usrouter.get("/singleproduct/:id", usercontroller.singleproduct);
 usrouter.get("/profile",loged,usercontroller.profile);
 usrouter.get("/signup", usercontroller.signup);

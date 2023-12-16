@@ -159,10 +159,19 @@ const newcat = async (req, res) => {
 // admin new category adding 
 const addcategory = async (req, res) => {
   try {
-      const catName = req.body.categoryName;
-      const catdes = req.body.description;
-      await categoryModel.insertMany({ name: catName, description: catdes });
-      res.redirect("/admin/category");
+    const catName = req.body.categoryName;
+    const catDes = req.body.description;
+
+    const categoryExists = await categoryModel.findOne({ name: catName });
+
+    if (categoryExists) {
+        console.log("Category exists");
+        res.redirect('/admin/category');
+    } else {
+        await categoryModel.create({ name: catName, description: catDes });
+        console.log("Category created");
+        res.redirect('/admin/category');
+    }
    
   } catch (error) {
     console.log(error);

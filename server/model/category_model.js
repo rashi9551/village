@@ -5,16 +5,21 @@ const mongoose=require("mongoose")
 const catSchema=new mongoose.Schema({
     name:{
         type:String,
-        required:true
+        required:true,
     },
     description:{
         type:String,
         required:true
     },
+    types:{
+        type: Array,
+        default: ['All'],
+    },
     status:{
         type:Boolean,
-        default:true,
-        required:true
+        required:true,
+        default:true
+    
     }
 })
 
