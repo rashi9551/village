@@ -1,6 +1,7 @@
+
 // modules importing 
-const productModel = require("../model/product_model");
-const categoryModel = require("../model/category_model");
+const productModel = require("../../model/product_model");
+const categoryModel = require("../../model/category_model");
 const fs = require("fs");
 const path = require("path");
 

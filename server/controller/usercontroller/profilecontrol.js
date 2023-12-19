@@ -1,10 +1,10 @@
-const catModel = require("../model/category_model");
-const cartModel = require("../model/cart_model");
-const userModel = require("../model/user_model");
+const catModel = require("../../model/category_model");
+const cartModel = require("../../model/cart_model");
+const userModel = require("../../model/user_model");
 const bcrypt = require("bcryptjs");
-const favModel = require("../model/favouriteModel");
-const walletModel=require('../model/wallet_Model')
-const {key_id,key_secret}=require("../../.env")
+const favModel = require("../../model/favouriteModel");
+const walletModel=require('../../model/wallet_Model')
+const {key_id,key_secret}=require("../../../.env")
 const Razorpay=require("razorpay")
 
 
@@ -15,10 +15,10 @@ const {
   phoneValid,
   confirmpasswordValid,
   passwordValid,
-} = require("../../utils/validators/usersignupvalidators");
-const orderModel = require("../model/order_model");
-const productModel = require("../model/product_model");
-const { category } = require("./admincontroller");
+} = require("../../../utils/validators/usersignupvalidators");
+const orderModel = require("../../model/order_model");
+const productModel = require("../../model/product_model");
+const { category } = require("../admincontroller/admin_controller");
 
 const userdetails = async (req, res) => {
   try {

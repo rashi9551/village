@@ -1,11 +1,11 @@
 const express = require("express");
 const usrouter = express.Router();
-const usercontroller = require("./../controller/userController");
+const usercontroller = require("../controller/usercontroller/usercontroller");
 const session=require("../../middleware/isAuth");
 const { sep } = require("path/posix");
-const profilecontroller=require("../controller/profilecontrol")
-const cartcontroller=require("../controller/cartcontroller")
-const checkoutcontroller=require("../controller/checkoutcontroller")
+const profilecontroller=require("../controller/usercontroller/profilecontrol")
+const cartcontroller=require("../controller/usercontroller/cartcontroller")
+const checkoutcontroller=require("../controller/usercontroller/checkoutcontroller")
 const {loged,signforgot,forgot,logedtohome}=session
 
 usrouter.get("/", usercontroller.index);

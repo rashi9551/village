@@ -1,4 +1,4 @@
-const couponModel=require('../model/coupon_model')
+const couponModel=require('../../model/coupon_model')
 const createCoupon=async(req,res)=>{
     try {
         const{couponCode,minimumPrice,discount,expiry}=req.body

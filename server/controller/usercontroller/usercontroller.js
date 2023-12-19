@@ -1,6 +1,6 @@
 // modules importing 
-const userModel = require("../model/user_model");
-const otpModel = require("../model/user_otpmodel");
+const userModel = require("../../model/user_model");
+const otpModel = require("../../model/user_otpmodel");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
@@ -10,11 +10,11 @@ const {
   phoneValid,
   confirmpasswordValid,
   passwordValid,
-} = require("../../utils/validators/usersignupvalidators");
-const { Email, pass } = require("../../.env");
-const catModel = require("../model/category_model");
-const productModel = require("../model/product_model");
-const { product } = require("./productcontroller");
+} = require("../../../utils/validators/usersignupvalidators");
+const { Email, pass } = require("../../../.env");
+const catModel = require("../../model/category_model");
+const productModel = require("../../model/product_model");
+const { product } = require("../admincontroller/productcontroller");
 
 
 // otp generating function 

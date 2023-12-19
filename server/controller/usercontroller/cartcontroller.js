@@ -1,7 +1,7 @@
-const productModel=require("../model/product_model")
-const catModel=require("../model/category_model")
-const userModel=require("../model/user_model")
-const cartModel=require("../model/cart_model")
+const productModel=require("../../model/product_model")
+const catModel=require("../../model/category_model")
+const userModel=require("../../model/user_model")
+const cartModel=require("../../model/cart_model")
 
 
 

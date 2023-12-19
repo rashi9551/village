@@ -1,4 +1,4 @@
-const orderModel=require("../model/order_model")
+const orderModel=require("../../model/order_model")
 
 const orderPage=async(req,res)=>{
     try {

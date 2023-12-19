@@ -1,15 +1,15 @@
-const catModel=require("../model/category_model")
-const userModel=require("../model/user_model")
-const cartModel=require("../model/cart_model")
-const productModel=require("../model/product_model")
-const orderModel=require("../model/order_model")
+const catModel=require("../../model/category_model")
+const userModel=require("../../model/user_model")
+const cartModel=require("../../model/cart_model")
+const productModel=require("../../model/product_model")
+const orderModel=require("../../model/order_model")
 const bcrypt=require("bcryptjs")
 const mongoose =require("mongoose")
 const Razorpay=require("razorpay")
 const shortid = require("shortid")
-const {key_id,key_secret}=require('../../.env');
-const couponModel=require("../model/coupon_model")
-const walletModel = require("../model/wallet_Model")
+const {key_id,key_secret}=require('../../../.env');
+const couponModel=require("../../model/coupon_model")
+const walletModel = require("../../model/wallet_Model")
 
 
 const checkoutreload=async(req,res)=>{

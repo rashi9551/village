@@ -1,10 +1,13 @@
 const express =require("express")
-const admincontroller=require("../controller/admincontroller")
+const admincontroller=require("../controller/admincontroller/admin_controller")
 const admminrouter=express.Router()
-const productcontroller=require("../controller/productcontroller")
+const productcontroller=require("../controller/admincontroller/productcontroller")
 const sessions=require("../../middleware/isadAuth")
-const ordercontroller=require("../controller/ordercontrol")
-const couponcontroller=require("../controller/couponcontroller")
+const ordercontroller=require("../controller/admincontroller/ordercontrol")
+const couponcontroller=require("../controller/admincontroller/couponcontroller")
+const Catcontroller=require("../controller/admincontroller/category")
+const bannercontroller=require("../controller/admincontroller/banner_controller")
+
 
 const multer=require('multer')
 const session = require("express-session")
@@ -25,17 +28,16 @@ admminrouter.get("/update/:email",sessions.adisAuth,admincontroller.userupdate)
 admminrouter.post("/searchuser",sessions.adisAuth,admincontroller.searchuser)
 admminrouter.get("/searchview",sessions.adisAuth,admincontroller.searchview)
 admminrouter.get("/filter/:option",sessions.adisAuth,admincontroller.filter)
-
 admminrouter.get("/adlogout",sessions.adisAuth,admincontroller.adlogout)
 
 
 
-admminrouter.get("/category",sessions.adisAuth,admincontroller.category)
-admminrouter.get("/newcat",sessions.adisAuth,admincontroller.newcat)
-admminrouter.post("/add-category",sessions.adisAuth,admincontroller.addcategory)
-admminrouter.get("/unlistcat/:id",sessions.adisAuth,admincontroller.unlistcat)
-admminrouter.get("/updatecat/:id",sessions.adisAuth,admincontroller.updatecat)
-admminrouter.post("/update-category/:id",sessions.adisAuth,admincontroller.updatecategory)
+admminrouter.get("/category",sessions.adisAuth,Catcontroller.category)
+admminrouter.get("/newcat",sessions.adisAuth,Catcontroller.newcat)
+admminrouter.post("/add-category",sessions.adisAuth,Catcontroller.addcategory)
+admminrouter.get("/unlistcat/:id",sessions.adisAuth,Catcontroller.unlistcat)
+admminrouter.get("/updatecat/:id",sessions.adisAuth,Catcontroller.updatecat)
+admminrouter.post("/update-category/:id",sessions.adisAuth,Catcontroller.updatecategory)
 
 
 admminrouter.get("/product",sessions.adisAuth,productcontroller.product)
@@ -56,6 +58,10 @@ admminrouter.get('/couponList',sessions.adisAuth,couponcontroller.couponList)
 admminrouter.get('/newcoupon',sessions.adisAuth,couponcontroller.addcouponpage)
 admminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
 
+
+admminrouter.get('/bannerList',sessions.adisAuth,bannercontroller.bannerList)
+admminrouter.get('/newbanner',sessions.adisAuth,bannercontroller.addbannerpage)
+admminrouter.post('/addBanner',upload.single('image'),sessions.adisAuth,bannercontroller.addBanner)
 
 
 
