@@ -60,10 +60,12 @@ admminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
 
 
 admminrouter.get('/bannerList',sessions.adisAuth,bannercontroller.bannerList)
-admminrouter.get('/newbanner',sessions.adisAuth,bannercontroller.addbannerpage)
-admminrouter.post('/addBanner',upload.single('image'),sessions.adisAuth,bannercontroller.addBanner)
-
-
+admminrouter.get('/newbanner',sessions.adisAuth,bannercontroller.addbanner)
+admminrouter.post('/addBanner',upload.single('image'),sessions.adisAuth,bannercontroller.addBannerPost)
+admminrouter.get('/unlistBanner/:id',sessions.adisAuth,bannercontroller.unlistBanner)
+admminrouter.get('/updateBanner/:id',sessions.adisAuth,bannercontroller.updateBanner)
+admminrouter.post('/updateBannerPost/:id',upload.single('newImage'),sessions.adisAuth,bannercontroller.updateBannerPost)
+admminrouter.get('/deleteBanner/:id',sessions.adisAuth,bannercontroller.deleteBanner)
 
 
 module.exports=admminrouter
