@@ -25,10 +25,19 @@ const bannerSchema=new mongoose.Schema({
         type:String,
         require:true
     },
+    bannerLink:{
+        type:String,
+        require:true
+    },
     active:{
         type:Boolean,
         default:true
-    }
+    },
+    color:{
+        type:String,
+        require:true
+    },
+
 
 
 })

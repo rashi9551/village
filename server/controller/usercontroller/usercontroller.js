@@ -3,6 +3,7 @@ const userModel = require("../../model/user_model");
 const otpModel = require("../../model/user_otpmodel");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
+const bannerModel=require('../../model/banner_model')
 const bcrypt = require("bcryptjs");
 const {
   nameValid,
@@ -57,15 +58,20 @@ const sendmail = async (email, otp) => {
 // home page rendering 
 const index = async (req, res) => {
   try {
-    const categories = await catModel.find();
+    const [categories, banners] = await Promise.all([
+      catModel.find(),
+      bannerModel.find()
+    ]);
+
     console.log(categories);
-    res.render("users/index", { categories });
+    console.log(banners);
+
+    res.render("users/index", { categories, banners });
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching data:", error);
     res.status(500).send("Internal Server Error");
   }
 };
-
 // shoping page 
 const shop = async (req, res) => {
   try {
