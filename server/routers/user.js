@@ -65,6 +65,7 @@ usrouter.post('/wallettransaction',loged,checkoutcontroller.wallettransaction)
 usrouter.post("/placeorder",loged,checkoutcontroller.placeorder)
 usrouter.post('/create/orderId',loged,checkoutcontroller.upi)
 
+usrouter.get("/bannerURL",usercontroller.bannerURL)
 
 
 module.exports = usrouter;

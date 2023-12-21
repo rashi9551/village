@@ -4,7 +4,8 @@ const userModel = require("../../model/user_model");
 const bcrypt = require("bcryptjs");
 const favModel = require("../../model/favouriteModel");
 const walletModel=require('../../model/wallet_Model')
-const {key_id,key_secret}=require("../../../.env")
+const key_id=process.env.key_id;
+const key_secret=process.env.key_secret;
 const Razorpay=require("razorpay")
 
 

@@ -5,6 +5,7 @@ const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
 const bannerModel=require('../../model/banner_model')
 const bcrypt = require("bcryptjs");
+const mongoose=require('mongoose')
 const {
   nameValid,
   emailValid,
@@ -72,6 +73,44 @@ const index = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+const bannerURL=async(req,res)=>{
+  try{
+
+      const bannerId=req.query.id
+      console.log(bannerId);
+      const banner=await bannerModel.findOne({_id:bannerId})
+      if(banner.label=="category"){
+        console.log("ithu banner link",banner.bannerLink)
+          const categoryId=new mongoose.Types.ObjectId(banner.bannerlink)
+          const  category=await catModel.findOne({_id: categoryId})
+          res.redirect(`/shop/?category=${categoryId}`)
+          
+      }
+      else if(banner.label=="product"){
+        console.log("ithu banner link",banner.bannerLink)
+          const productId=new mongoose.Types.ObjectId(banner.bannerlink)
+          const  product=await productModel.findOne({_id: productId})
+          console.log("product indo",product)
+          res.redirect(`/singleproduct/${productId}`)
+      
+      }
+      else if(banner.label=="coupon"){
+          const couponId=new mongoose.Types.ObjectId(banner.bannerlink)
+          const  coupon=await couponModel.findOne({_id: couponId})
+          res.redirect("/profile")
+      
+      }
+      else{
+          res.redirect("/")
+      }
+
+  }
+  catch(err){
+      console.log(err);
+      res.send(err)
+  }
+}
 // shoping page 
 const shop = async (req, res) => {
   try {
@@ -276,6 +315,7 @@ const singleproduct = async (req, res) => {
   try {
     const id=req.params.id
         const product=await productModel.findOne({_id:id})
+        console.log("ithu aahnu params id",req.params.id)
         const type= product.type;
         console.log("type",type);
         const similar = await productModel
@@ -591,6 +631,6 @@ module.exports = {
   filterProducts,
   sortProducts,
   searchProducts,
-  
+  bannerURL
 
 };

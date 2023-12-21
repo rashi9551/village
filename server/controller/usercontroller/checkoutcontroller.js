@@ -7,7 +7,8 @@ const bcrypt=require("bcryptjs")
 const mongoose =require("mongoose")
 const Razorpay=require("razorpay")
 const shortid = require("shortid")
-const {key_id,key_secret}=require('../../../.env');
+const key_id=process.env.key_id;
+const key_secret=process.env.key_secret;
 const couponModel=require("../../model/coupon_model")
 const walletModel = require("../../model/wallet_Model")
 

@@ -1,14 +1,21 @@
 const express =require("express")
+require('dotenv').config()
+
+
 const bodyparser = require('body-parser')
 const router=require("./server/routers/user")
 const path = require('path')
 const nocache=require("nocache")
 const session=require('express-session')
 const multer=require("multer")
-const mongo=require("./config/db")
-const { PORT } = require("./.env")
-
+const mongoose=require("mongoose")
 const adminrouter=require("./server/routers/admin")
+const { error } = require("console")
+
+mongoose.connect(process.env.MONGO_URL)
+
+
+const port=process.env.PORT
 
 
 const app=express()
@@ -50,12 +57,11 @@ app.post('/your-upload-route', upload.array('files'), (req, res) => {
   console.log(req.files);
 });
 
-mongo.connect()
 
 app.use("/",router)
 app.use("/admin",adminrouter)
 
 // porting 
-app.listen(PORT,()=>{
+app.listen(port,()=>{
     console.log("http://localhost:3000 server is running mwoney");
 })
