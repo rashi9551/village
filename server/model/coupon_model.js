@@ -7,15 +7,23 @@ const couponSchema=new mongoose.Schema({
         required:true,
         upppercase:true
     },
+    type:{
+        type:String,
+        required:true
+        
+    },
     minimumPrice:{
         type:Number,
         required:true,
-},
-   
+    },
     discount:{
         type:Number,
         min:0,
         max:100,
+        required:true
+    },
+    maxRedeem:{
+        type:Number,
         required:true
     },
     expiry:{
@@ -29,7 +37,9 @@ const couponSchema=new mongoose.Schema({
     }
 })
 
+
 couponSchema.index({expiry:1},{expireAfterSeconds:0})
+
 const couponModel=new mongoose.model("coupons",couponSchema)
 
 module.exports=couponModel

@@ -112,6 +112,20 @@ const editing = async (req, res) => {
   }
 };
 
+const resizeImage=async(req,res)=>{
+  try {
+        const pid=req.query.pid
+        const filename=req.query.filename
+        const imagePath=path.join(filename)
+        res.render('admin/resizeImg',{imagePath})
+        console.log(imagePath)
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+
+}
+
 // product deleting 
 const deleteimg = async (req, res) => {
   try {
@@ -201,4 +215,5 @@ module.exports = {
   deleteimg,
   updateimg,
   updateproduct,
+  resizeImage
 };

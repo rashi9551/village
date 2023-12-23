@@ -31,6 +31,9 @@ admminrouter.get("/filter/:option",sessions.adisAuth,admincontroller.filter)
 admminrouter.get("/adlogout",sessions.adisAuth,admincontroller.adlogout)
 
 
+admminrouter.post("/chartData",sessions.adisAuth,admincontroller.chartData)
+admminrouter.post('/downloadsales',sessions.adisAuth,admincontroller.downloadsales)
+
 
 admminrouter.get("/category",sessions.adisAuth,Catcontroller.category)
 admminrouter.get("/newcat",sessions.adisAuth,Catcontroller.newcat)
@@ -48,6 +51,7 @@ admminrouter.get("/deletepro/:id",sessions.adisAuth,productcontroller.deleteprod
 admminrouter.get("/updatepro/:id",sessions.adisAuth,productcontroller.updatepro)
 admminrouter.get("/editimg/:id/",sessions.adisAuth,productcontroller.editing)
 admminrouter.get("/deleteimg",sessions.adisAuth,productcontroller.deleteimg)
+admminrouter.get('/resizeimg',sessions.adisAuth,productcontroller.resizeImage)
 admminrouter.post("/updateimg/:id",sessions.adisAuth,upload.array('images'),productcontroller.updateimg)
 admminrouter.post("/updateproduct/:id",sessions.adisAuth,productcontroller.updateproduct)
 
@@ -57,7 +61,9 @@ admminrouter.post("/updateOrderStatus",sessions.adisAuth,ordercontroller.updateo
 admminrouter.get('/couponList',sessions.adisAuth,couponcontroller.couponList)
 admminrouter.get('/newcoupon',sessions.adisAuth,couponcontroller.addcouponpage)
 admminrouter.post('/add_coupon',sessions.adisAuth,couponcontroller.createCoupon)
-
+admminrouter.get('/unlistCoupon/:id',sessions.adisAuth,couponcontroller.unlistCoupon)
+admminrouter.get('/editCouponGet/:id',sessions.adisAuth,couponcontroller.editCouponPage)
+admminrouter.post('/updateCoupon',sessions.adisAuth,couponcontroller.updateCoupon)
 
 admminrouter.get('/bannerList',sessions.adisAuth,bannercontroller.bannerList)
 admminrouter.get('/newbanner',sessions.adisAuth,bannercontroller.addbanner)

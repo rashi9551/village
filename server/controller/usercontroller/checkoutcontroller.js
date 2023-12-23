@@ -195,26 +195,89 @@ const wallettransaction=async(req,res)=>{
     }
 }
 
-const applyCoupon=async(req,res)=>{
+const applyCoupon = async (req, res) => {
     try {
-        const {couponCode,subtotal}=req.body
-        const coupon =await couponModel.findOne({couponCode:couponCode});
+      const { couponCode, subtotal } = req.body;
+      console.log("ithu total",subtotal)
+      const userId=req.session.userId
+      const coupon = await couponModel.findOne({ couponCode: couponCode });
+      console.log(coupon);
+      
+      if (coupon&&coupon.status===true) {
+  
+          const user = await userModel.findById(userId);
+  
+          if (user && user.usedCoupons.includes(couponCode)) {
+            console.log("nvjksadnjkghakjvajkvnasdmvbasfhvb");
+            res.json({ success: false, message: "Already Redeemed" });
+          }
+          else if (coupon.expiry > new Date() && coupon.minimumPrice <= subtotal) {
+              console.log("Coupon is valid");
+              let dicprice;
+              let price;
+              if(coupon.type==="percentageDiscount"){
+                dicprice = (subtotal * coupon.discount) / 100;
+                if(dicprice>=coupon.maxRedeem){
+                  dicprice=coupon.maxRedeem
+                }
+                price = subtotal - dicprice;
+              }else if(coupon.type==="flatDiscount"){
+                dicprice=coupon.discount
+                price=subtotal-dicprice
+  
+              }
+              
+              console.log("ithu priceaahmu",price,dicprice);
+  
+              await userModel.findByIdAndUpdate(
+                userId,
+                { $addToSet: { usedCoupons: couponCode } },
+                { new: true }
+              );
+              res.json({ success: true, dicprice, price });
+          } else {
+              res.json({ success: false, message: "Invalid Coupon" });
+          }
+      } else {
+          res.json({ success: false, message: "Coupon not found" });
+      }
+      
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error occurred');
+      }
+  }
+const recokeCoupon=async(req,res)=>{
+    try {
+        console.log("eeelu kayari")
+        const { couponCode,subtotal}=req.body
+        const userId=req.session.userId 
+        const coupon=await couponModel.findOne({couponCode:couponCode})
         console.log(coupon);
+
         if(coupon){
-         if(coupon.expiry > new Date() && coupon.minimumPrice<=subtotal){
-            console.log("cp nokkunnu");
-            const dicprice=(subtotal*coupon.discount)/100
-            const price=subtotal-dicprice;
-            console.log(price);
-            res.json({success:true,dicprice,price})
+            const user=await userModel.findOne({userId:userId})
+            if (coupon.expiry > new Date() && coupon.minimumPrice <= subtotal) {
+                console.log("Coupon is valid");
+                const dprice = (subtotal * coupon.discount) / 100;
+                const dicprice = 0;
+    
+                const price = subtotal;
+                console.log(price);
+    
+                await userModel.findByIdAndUpdate(
+                  userId,
+                  { $pull: { usedCoupons: couponCode } },
+                  { new: true }
+                );
+                res.json({ success: true, dicprice, price });
+            } else {
+                res.json({ success: false, message: "Invalid Coupon" });
+            }
+        }else{
+            res.json({success:false,message:"coupon not found"})
+
         }
-        else{
-            res.json({success:false,message:"invalid coupon"})
-        }
-    }
-    else{
-        res.json({success:false,message:"coupon not found"})
-    }
         
     } catch (error) {
         console.log(error);
@@ -231,6 +294,7 @@ module.exports={
     placeorder,
     upi,
     applyCoupon,
-    wallettransaction
+    wallettransaction,
+    recokeCoupon
 
 }

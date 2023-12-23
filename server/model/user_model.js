@@ -30,7 +30,9 @@ const userSchema = new mongoose.Schema({
     status:{type:Boolean,
         default:false,
         required:true
-        }
+        },
+        usedCoupons:
+     [{ type: String }],
 })
 const userModel = new mongoose.model("userdetails",userSchema)
 

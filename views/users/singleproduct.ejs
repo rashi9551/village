@@ -281,11 +281,17 @@
     <div>
     <div class="fulldiv my-5 d-flex justify-content-center">
         <div class="product-container">
-            <div class="product-image">
-                <a href="/<%= product.images[0] %>" class="MagicZoom" id="Mag">                    
-                    <img id="mainImage" src="/<%= product.images[0] %>" alt="Product Image" class="img-fluid" 
-                    style="width: 300px; height: 300px; object-fit: cover;">
-                </a>
+           <div style="width: 50vh;" >
+                  
+                <div id="product-slider" class="tns-slider">
+                    <% product.images.forEach((image, index) => { %>
+                        <a href="/<%= image %>"  class="MagicZoom" id="Mag">
+                        <img src="/<%= image %>" alt="<%= product.name %> Image" class="img-fluid"/>
+                    </a>
+                    <% }); %>
+                </div>
+                
+               
             </div>
             </div>
 
@@ -344,11 +350,11 @@
                     <a href="/addtofavourites/<%=product._id%>"><button class="btn btn-secondary">
                             <span class="fas fa-heart"></span> Add to Wishlist
                         </button></a>
+                    </div>
                 </div>
             </div>
+            
         </div>
-        
-    </div>
     <!-- Similar Products Section -->
     <% if (locals.similar && locals.similar.length > 0) { %>
         <div class="similar-products-section ml-3 mt-5">
@@ -508,9 +514,41 @@
                 autoplay: false,
                 controls: true,
                 nav: false,
+                prevButton: document.querySelector('.custom-prev-control'),
+        nextButton: document.querySelector('.custom-next-control'),
+  
              
             });
+             var prevButton = document.querySelector('.tns-controls button[data-controls="prev"]');
+    var nextButton = document.querySelector('.tns-controls button[data-controls="next"]');
+
+    if (prevButton) {
+        prevButton.innerHTML = '<'; 
+    }
+
+    if (nextButton) {
+        nextButton.innerHTML = '>'; 
+    }
+
+    if (prevButton && nextButton) {
+            prevButton.style.background = 'black'; // Set your desired background color
+            prevButton.style.color = 'white'; // Set your desired text color
+            // Similarly, you can style the nextButton
+            nextButton.style.background = 'black';
+            nextButton.style.color =  'white';
+
+            // Positioning adjustments
+            
+           
+
+            prevButton.style.left = '10px'; // Adjust the left position as needed
+
+            nextButton.style.right = '10px'; // Adjust the right position as needed
+        }
         });
+
+
+       
     </script>
 
     

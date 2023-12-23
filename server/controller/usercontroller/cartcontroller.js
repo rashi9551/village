@@ -2,6 +2,7 @@ const productModel=require("../../model/product_model")
 const catModel=require("../../model/category_model")
 const userModel=require("../../model/user_model")
 const cartModel=require("../../model/cart_model")
+const couponModel = require("../../model/coupon_model")
 
 
 
@@ -176,50 +177,68 @@ const updatecart=async(req,res)=>{
     }
 }
 
-const checkoutpage=async(req,res)=>{
+const checkoutpage = async (req, res) => {
     try {
-        const categories=await catModel.find();
-        const cartId=req.query.cartId
-        const userId=req.session.userId
-
-        const addresslist=await userModel.findOne({_id:userId})
+      
+      const categories = await catModel.find();
+      const cartId = req.query.cartId;
+      const userId = req.session.userId;
+      const user = await userModel.findById(userId);
+      const availableCoupons = await couponModel.find({
+        couponCode: { $nin: user.usedCoupons },
+        status:true
+      });
+      console.log("coupons",availableCoupons);
+  
+  
+      const addresslist = await userModel.findOne({ _id: userId });
+  
+      if (!addresslist) {
+        console.log('User not found');
+        return res.status(404).send('User not found');
+      }
+  
+      const addresses = addresslist.address;
+  
+      const cart = await cartModel.findById(cartId).populate('item.productId')
+  
+      for (const cartItem of cart.item || []) {
+        const product = await productModel.findById(cartItem.productId);
         
-        if(!addresslist){
-            console.log("user not found");
-            return res.status(404).send("user not found")
-
+        
+        if (cartItem.quantity > product.stock) {
+          
+          console.log('Selected quantity exceeds available stock for productId:', cartItem.productId);
+          const nonitemid= cartItem.productId
+          const theitem=await productModel.findOne({_id:nonitemid})
+          const nameitem = theitem.name
+          return res.render('users/cart',{cart,categories,message:` The product ${nameitem}'s quantity Exceeds StockLimit..!!`})
+        
         }
-        const addresses=addresslist.address;
-        const cart = await cartModel.findById(cartId).populate('item.productId');
-        for (const cartItem of cart.item || []) {
-            const product = await productModel.findById(cartItem.productId);
-            
-            
-            if (cartItem.quantity > product.stock) {
-              cartItem.stock=product.stock
-              console.log('Selected quantity exceeds available stock for productId:', cartItem.productId);
-              return res.render('users/cart',{cart,categories,message:"Some of the products quantity Exceeds StockLimit..!!"})
-            
-            }
-            
-          }
-        const cartItems =(cart.item .map((cartItem)=>({          
-            productId:cartItem.productId._id,
-            productName:cartItem.productId.name,
-            quantity:cartItem.quantity,
-            itemTotal:cartItem.total,
-        })))
-        console.log("its name aahney:",cartItems);
-
-
-        // console.log("cart total",cart.total);
-        res.render("users/checkout",{addresses,cartItems,categories,cart,cartId})
-
-    } catch (error) {
-        console.log(error);
-        res.send(error) 
+        
+      }
+      
+  
+      const cartItems = (cart.item || []).map((cartItem) => ({
+        productId:cartItem.productId._id,
+        productName: cartItem.productId.name,
+        price:cartItem.productId.price,
+        quantity: cartItem.quantity,
+        itemTotal: cartItem.total,
+      }));
+  
+      
+  
+      console.log('Cart Total:', cart.total);
+  
+      res.render('users/checkout', {availableCoupons, addresses, cartItems, categories, cart,cartId });
+    
+    
+  }catch(err) {
+      console.error(err);
+      res.status(500).send('Error occurred');
     }
-}
+  };
 
 module.exports={
     showcart,
