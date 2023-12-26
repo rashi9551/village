@@ -4,6 +4,7 @@ const otpModel = require("../../model/user_otpmodel");
 const otpgenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
 const bannerModel=require('../../model/banner_model')
+const WalletModel=require('../../model/wallet_Model')
 const bcrypt = require("bcryptjs");
 const mongoose=require('mongoose')
 const {
@@ -13,7 +14,8 @@ const {
   confirmpasswordValid,
   passwordValid,
 } = require("../../../utils/validators/usersignupvalidators");
-const { Email, pass } = require("../../../.env");
+const Email=process.env.Email
+const pass=process.env.pass
 const catModel = require("../../model/category_model");
 const productModel = require("../../model/product_model");
 const { product } = require("../admincontroller/productcontroller");
@@ -37,8 +39,8 @@ const sendmail = async (email, otp) => {
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: Email,
-        pass: pass,
+        user: Email, // replace with your Gmail username
+        pass: pass, // replace with your Gmail password
       },
     });
 
@@ -49,12 +51,15 @@ const sendmail = async (email, otp) => {
       text: "Your OTP is:" + otp,
     };
 
-    transporter.sendMail(mailOptions);
-    console.log("E-mail sent sucessfully");
+    // Use async/await for sending mail to make sure it completes before logging success
+    await transporter.sendMail(mailOptions);
+
+    console.log("E-mail sent successfully");
   } catch (err) {
-    console.log("error in sending mail:", err);
+    console.log("Error in sending mail:", err);
   }
 };
+
 
 // home page rendering 
 const index = async (req, res) => {
@@ -311,26 +316,64 @@ const sortProducts=async(req,res)=>{
 }
 
 // single product page 
-const singleproduct = async (req, res) => {
-  try {
-    const id=req.params.id
-        const product=await productModel.findOne({_id:id})
-        console.log("ithu aahnu params id",req.params.id)
-        const type= product.type;
-        console.log("type",type);
-        const similar = await productModel
-        .find({ type: type, _id: { $ne: id } })
-        .limit(4);
-        console.log("similar",similar);
-        const categories = await catModel.find();
-        product.images = product.images.map(image => image.replace(/\\/g, '/'));
-        console.log('Image Path:', product.images[0]);
-        res.render('users/singleproduct',{categories,product:product,similar})
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("error occured");
+const singleproduct=async(req,res)=>{
+  try{
+      const id=req.params.id
+      console.log("haywan",id);
+      const product = await productModel
+      .findOne({ _id: id })
+      .populate({
+        path: 'userRatings.userId',
+        select: 'username'
+      });        
+      const type= product.type;
+
+      const convertedId = new mongoose.Types.ObjectId(id);
+      
+
+      const result = await productModel.aggregate([
+          {
+            $match: {_id:convertedId}
+          },
+          {
+            $unwind:{ path:"$userRatings",
+            preserveNullAndEmptyArrays: true
+          }
+          },
+          {
+            $group: {
+              _id: null,
+              averageRating: { $avg: "$userRatings.rating" },
+              totalRatings: { $sum: 1 }
+            }
+          }
+        ]);
+        
+        const averageRating = result.length > 0 ? result[0].averageRating : 0;
+        const totalRatings = result.length > 0 ? result[0].totalRatings : 0;
+
+        console.log('hey there',result);
+
+        console.log(averageRating,totalRatings);
+
+
+      const similar = await productModel
+      .find({ type: type, _id: { $ne: id } })
+      .limit(4);
+      console.log("similar",similar);
+      const categories = await catModel.find();
+      product.images = product.images.map(image => image.replace(/\\/g, '/'));
+      console.log('Image Path:', product.images[0]);
+      console.log("ithu rateng aa ",product.userRatings[0])
+      res.render('users/singleproduct',{categories,product:product,similar,averageRating,totalRatings})
+      
   }
-};
+  catch(err){
+      console.log("Shopping Page Error:",err);
+      res.status(500).send('Internal Server Error');
+    }
+
+}
 
 // user profile page 
 const profile = async (req, res) => {
@@ -362,6 +405,10 @@ const signotp = async (req, res) => {
     const phone = req.body.phone;
     const password = req.body.password;
     const cpassword = req.body.confirm_password;
+    let referralCode;
+        if(req.body.referralCode){
+        referralCode=req.body.referralCode
+        }
 
     const isusernameValid = nameValid(username);
     const isEmailValid = emailValid(email);
@@ -394,6 +441,9 @@ const signotp = async (req, res) => {
         phone: phone,
         password: hashedpassword,
       });
+      if(referralCode){
+        req.session.referralCode=referralCode
+        }
       req.session.user = user;
       req.session.signup = true;
       req.session.forgot = false;
@@ -446,18 +496,58 @@ const verifyotp = async (req, res) => {
       console.log(otp);
       if (enteredotp == otp && expiry.getTime() >= Date.now()) {
         user.isVerified = true;
-        try {
-          if (req.session.signup) {
-            await userModel.create(user);
-            req.session.signup = false;
-            res.redirect("/");
-          } else if (req.session.forgot) {
-            res.redirect("/newpassword");
-          }
-        } catch (error) {
-          console.error(error);
-          res.status(500).send("Error occurred while saving user data");
-        }
+        user.isVerified = true;
+            try {
+                if(req.session.signup){
+                await userModel.create(user)
+
+                const userdata = await userModel.findOne({ email: email });
+                req.session.userId = userdata._id;
+                req.session.isAuth=true
+                const referral=req.session.referralCode
+                console.log("referal",referral);
+                const winner=await WalletModel.findOne({userId:referral})
+                console.log("winner",winner);
+                if (winner) {
+                    const updatedWallet = winner.wallet + 50;
+                
+                    await WalletModel.findOneAndUpdate(
+                        { userId: referral },
+                        { $set: { wallet: updatedWallet } },
+                        { new: true }
+                    );
+                
+                    const transaction = {
+                        reason:"Wallet Rewards",
+                        date: new Date(),
+                        type: "Credited", 
+                        amount: 50,
+                    };
+                
+                    await WalletModel.findOneAndUpdate(
+                        { userId: referral },
+                        { $push: { walletTransactions: transaction } },
+                        { new: true }
+                    );
+                
+                    console.log("Added 50 to the user's wallet.");
+                } else {
+                    console.log("User not found with the provided referral code.");
+                }
+
+                res.redirect('/')
+                
+                }
+                else if(req.session.forgot){
+                   
+                    res.redirect('/newpassword')
+                    
+                }
+            }
+            catch (error) {
+                console.error(error);
+                res.status(500).send('Error occurred while saving user data');
+            }
       } else {
         res.render("users/otp",{otperror:"Worng password/Time expired"});
       }

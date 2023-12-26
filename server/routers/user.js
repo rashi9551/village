@@ -3,9 +3,10 @@ const usrouter = express.Router();
 const usercontroller = require("../controller/usercontroller/usercontroller");
 const session=require("../../middleware/isAuth");
 const { sep } = require("path/posix");
-const profilecontroller=require("../controller/usercontroller/profilecontrol")
+const profilecontroller=require("../controller/usercontroller/profilecontroller")
 const cartcontroller=require("../controller/usercontroller/cartcontroller")
 const checkoutcontroller=require("../controller/usercontroller/checkoutcontroller")
+const ratingcontrol=require("../controller/usercontroller/ratingcontroller")
 const {loged,signforgot,forgot,logedtohome}=session
 
 usrouter.get("/", usercontroller.index);
@@ -60,6 +61,7 @@ usrouter.get("/orderhistory",loged,profilecontroller.orderhistory)
 usrouter.get("/cancelorder/:id",loged,profilecontroller.ordercancelling)
 usrouter.get('/cancelitem/:id/:orderId',loged,profilecontroller.itemcancelling)
 usrouter.get('/returnitem/:id/:orderId',loged,profilecontroller.itemreturning)
+usrouter.get('/rateAndReview',loged,ratingcontrol.ratePage)
 usrouter.get('/returnorder/:id',loged,profilecontroller.orderReturn)
 usrouter.get("/singleorder/:id",loged,profilecontroller.singleOrderPage)
 usrouter.get("/download-invoice/:orderId",loged,profilecontroller.downloadInvoice)

@@ -151,6 +151,7 @@
               <thead>
                 <tr>
                   <th style="text-align: center;">Date</th>
+                  <th>Reason</th>
                   <th>Type</th>
                   <th>Amount</th>
                 </tr>
@@ -159,6 +160,7 @@
                 <% usertransactions.forEach(function(transaction) { %>
                   <tr>
                     <td style="text-align: center;"><%= transaction.date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %></td>
+                    <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.reason %></td>
                     <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type %></td>
                     <td class="<%= transaction.type === 'Credited' ? 'credited' : 'debited' %>"><%= transaction.type === 'Credited' ? '+' : '-' %><%= transaction.amount %></td>
                   </tr>

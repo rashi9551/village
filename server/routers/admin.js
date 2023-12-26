@@ -1,12 +1,12 @@
 const express =require("express")
-const admincontroller=require("../controller/admincontroller/admin_controller")
+const admincontroller=require("../controller/admincontroller/admincontroller")
 const admminrouter=express.Router()
 const productcontroller=require("../controller/admincontroller/productcontroller")
 const sessions=require("../../middleware/isadAuth")
-const ordercontroller=require("../controller/admincontroller/ordercontrol")
+const ordercontroller=require("../controller/admincontroller/ordercontroller")
 const couponcontroller=require("../controller/admincontroller/couponcontroller")
-const Catcontroller=require("../controller/admincontroller/category")
-const bannercontroller=require("../controller/admincontroller/banner_controller")
+const Catcontroller=require("../controller/admincontroller/categorycontroller")
+const bannercontroller=require("../controller/admincontroller/bannercontroller")
 
 
 const multer=require('multer')
@@ -28,7 +28,7 @@ admminrouter.get("/update/:email",sessions.adisAuth,admincontroller.userupdate)
 admminrouter.post("/searchuser",sessions.adisAuth,admincontroller.searchuser)
 admminrouter.get("/searchview",sessions.adisAuth,admincontroller.searchview)
 admminrouter.get("/filter/:option",sessions.adisAuth,admincontroller.filter)
-admminrouter.get("/adlogout",sessions.adisAuth,admincontroller.adlogout)
+admminrouter.get("/adminlogout",sessions.adisAuth,admincontroller.adlogout)
 
 
 admminrouter.post("/chartData",sessions.adisAuth,admincontroller.chartData)

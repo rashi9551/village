@@ -73,6 +73,13 @@ description:{
       type: String,
       default: '',
     },
+    userRatings: [
+      {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: 'userdetails', required: true },
+          rating: { type: Number },
+          review: { type: String },
+      },
+  ]
 });
 
 // model creating

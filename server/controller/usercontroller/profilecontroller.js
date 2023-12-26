@@ -3,7 +3,7 @@ const cartModel = require("../../model/cart_model");
 const userModel = require("../../model/user_model");
 const bcrypt = require("bcryptjs");
 const puppeteer=require('puppeteer')
-const favModel = require("../../model/favouriteModel");
+const favModel = require("../../model/favourite_model");
 const walletModel = require("../../model/wallet_Model");
 const key_id = process.env.key_id;
 const key_secret = process.env.key_secret;
@@ -18,7 +18,8 @@ const {
 } = require("../../../utils/validators/usersignupvalidators");
 const orderModel = require("../../model/order_model");
 const productModel = require("../../model/product_model");
-const { category } = require("../admincontroller/admin_controller");
+const { category } = require("../admincontroller/admincontroller");
+const couponModel = require("../../model/coupon_model");
 
 const userdetails = async (req, res) => {
   try {
@@ -374,6 +375,7 @@ const ordercancelling = async (req, res) => {
           $set: { wallet: newWallet },
           $push: {
             walletTransactions: {
+              reason:"oreder cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
               amount: refund, // Replace with the actual amount you want to add
@@ -435,6 +437,7 @@ const itemcancelling = async (req, res) => {
           $set: { wallet: newWallet },
           $push: {
             walletTransactions: {
+              reason:"item Cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
               amount: refund, // Replace with the actual amount you want to add
@@ -517,6 +520,7 @@ const itemreturning=async(req,res)=>{
             $set: { wallet: newWallet },
             $push: {
               walletTransactions: {
+                reason:"ordered item returned",
                 date: new Date(),
                 type: 'Credited', 
                 amount: refund, 
@@ -606,6 +610,7 @@ const orderReturn = async (req, res) => {
         $set: { wallet: newWallet },
         $push: {
           walletTransactions: {
+            reason:"Order returned",
             date: new Date(),
             type: "Credited",
             amount: refund,
@@ -801,7 +806,8 @@ const wallet = async (req, res) => {
   }
   
   const userWallet = user.wallet;
-  const usertransactions=user.walletTransactions
+  console.log(user.walletTransactions)
+  const usertransactions=user.walletTransactions.reverse()
   
   res.render("users/wallet", { categories, userWallet ,usertransactions});
   } catch (err) {
@@ -833,6 +839,7 @@ const walletTopup = async (req, res) => {
     const wallet = await walletModel.findOne({ userId: userId });
     wallet.wallet += Amount;
     wallet.walletTransactions.push({
+      reason:"Wallet topup",
       type: "Credited",
       amount: Amount,
       date: new Date(),
@@ -960,7 +967,16 @@ const downloadInvoice = async (req, res) => {
 
 const couponsAndRewards=async (req,res)=>{
   try{
-      res.render('users/rewardsPage')
+
+      const userId = req.session.userId;
+      console.log(userId);
+      const user = await userModel.findById(userId);
+      const coupons = await couponModel.find({
+        couponCode: { $nin: user.usedCoupons },
+        status:true
+      });
+      const categories=await catModel.find()
+      res.render('users/rewardsPage',{categories,coupons,referralCode:userId})
   }
   catch(err){
       console.log(err);

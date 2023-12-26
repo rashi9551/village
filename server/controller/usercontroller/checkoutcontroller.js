@@ -178,7 +178,9 @@ const wallettransaction=async(req,res)=>{
             user.wallet-=amount
             await user.save()
             const wallet=await walletModel.findOne({userId:userid})
-            wallet.walletTransactions.push({type:'Debited',
+            wallet.walletTransactions.push({
+            reason:"order placed",
+            type:'Debited',
             amount:amount,
             date:new Date()
         })

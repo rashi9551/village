@@ -148,6 +148,7 @@ const adlogout = async (req, res) => {
   try {
       req.session.isadAuth = false;
       req.session.destroy();
+      res.redirect('/admin')
   
   } catch (error) {
     console.log(error);
