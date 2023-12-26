@@ -184,6 +184,7 @@
         <h4>Saved Addresses</h4>
         <!-- Saved addresses -->
         <ul>
+          <% if(userData.address.length>0){%>
           <% userData.address.forEach(function(address) { %>
             <li class="address-list">
               <div class="address-section">
@@ -197,6 +198,8 @@
               </div>
             </li>
           <% }); %>
+
+          <%};%>
         </ul>
         
 

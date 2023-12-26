@@ -7,10 +7,12 @@ const bcrypt=require("bcryptjs")
 const mongoose =require("mongoose")
 const Razorpay=require("razorpay")
 const shortid = require("shortid")
-const key_id=process.env.key_id;
+const KEY_ID=process.env.KEY_ID;
 const key_secret=process.env.key_secret;
 const couponModel=require("../../model/coupon_model")
 const walletModel = require("../../model/wallet_Model")
+const moment=require('moment')
+let date=moment()
 
 
 const checkoutreload=async(req,res)=>{
@@ -120,8 +122,8 @@ const placeorder=async(req,res)=>{
             totalPrice:parseInt(req.body.carttotal),
             shippingAddress:selectedAddress,
             paymentMethod:paymentMethod,
-            updatedAt:new Date(),
-            createdAt:new Date(),
+            updatedAt:date.format('YYYY-MM-DD HH:mm'),
+            createdAt:date.format('YYYY-MM-DD HH:mm'),
             status:"pending",
         })
 
@@ -149,7 +151,7 @@ const placeorder=async(req,res)=>{
         res.send(error)     
     }
 }
-const instance=new Razorpay({key_id:key_id,key_secret:key_secret})
+const instance=new Razorpay({key_id:KEY_ID,key_secret:key_secret})
 
 const upi = async (req, res) => {
   console.log('body:', req.body);
@@ -182,7 +184,7 @@ const wallettransaction=async(req,res)=>{
             reason:"order placed",
             type:'Debited',
             amount:amount,
-            date:new Date()
+            date:date.format('YYYY-MM-DD HH:mm')
         })
         await wallet.save();
         res.json({success:true})

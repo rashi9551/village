@@ -2,12 +2,13 @@ const catModel = require("../../model/category_model");
 const cartModel = require("../../model/cart_model");
 const userModel = require("../../model/user_model");
 const bcrypt = require("bcryptjs");
-const puppeteer=require('puppeteer')
+const puppeteer = require("puppeteer");
 const favModel = require("../../model/favourite_model");
 const walletModel = require("../../model/wallet_Model");
-const key_id = process.env.key_id;
+const KEY_ID = process.env.KEY_ID;
 const key_secret = process.env.key_secret;
 const Razorpay = require("razorpay");
+const moment=require('moment')
 
 const {
   nameValid,
@@ -27,6 +28,7 @@ const userdetails = async (req, res) => {
     console.log("id:", userid);
     const userdata = await userModel.findOne({ _id: userid });
     const categories = await catModel.find();
+    console.log("rnthhanu",userdata.address);
     res.render("users/userdetails", { categories, userData: userdata });
   } catch (error) {
     console.log(error);
@@ -355,7 +357,11 @@ const ordercancelling = async (req, res) => {
       { _id: id },
       { status: "Cancelled" }
     );
-    const result = await orderModel.findOne({ _id: id });
+    const result = await orderModel.findOneAndUpdate(
+      { _id: id },
+      { $set: { updatedAt: new Date() } },
+      { new: true } // This option returns the updated document
+    );
     if (
       result.paymentMethod == "Razorpay" ||
       result.paymentMethod == "Wallet"
@@ -375,7 +381,7 @@ const ordercancelling = async (req, res) => {
           $set: { wallet: newWallet },
           $push: {
             walletTransactions: {
-              reason:"oreder cancelled",
+              reason: "oreder cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
               amount: refund, // Replace with the actual amount you want to add
@@ -437,7 +443,7 @@ const itemcancelling = async (req, res) => {
           $set: { wallet: newWallet },
           $push: {
             walletTransactions: {
-              reason:"item Cancelled",
+              reason: "item Cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
               amount: refund, // Replace with the actual amount you want to add
@@ -485,95 +491,84 @@ const itemcancelling = async (req, res) => {
     res.send("couldnt cancel");
   }
 };
-const itemreturning=async(req,res)=>{
-  try{
-      const userId=req.session.userId
-      const id=req.params.id
-      const orderId=req.params.orderId
-  
-      const order = await orderModel.findOne({ _id:orderId });
+const itemreturning = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const id = req.params.id;
+    const orderId = req.params.orderId;
 
-      const user=await walletModel.findOne({userId:userId})
+    const order = await orderModel.findOne({ _id: orderId });
 
+    const user = await walletModel.findOne({ userId: userId });
 
+    const itemIndex = order.items.findIndex((item) => item.productId == id);
 
-      
-      const itemIndex = order.items.findIndex(item => item.productId == id);
-  
-      if (itemIndex === -1) {
-          return res.status(404).send("Item not found in the order");
+    if (itemIndex === -1) {
+      return res.status(404).send("Item not found in the order");
+    }
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    const refund = order.items[itemIndex].price;
+    console.log("refundAmount", refund);
+
+    const currentWallet = user.wallet;
+    const newWallet = currentWallet + refund;
+    const amountUpdate = await walletModel.updateOne(
+      { userId: userId },
+      {
+        $set: { wallet: newWallet },
+        $push: {
+          walletTransactions: {
+            reason: "ordered item returned",
+            date: new Date(),
+            type: "Credited",
+            amount: refund,
+          },
+        },
       }
-  
-  
-      if (!order) {
-          return res.status(404).send("Order not found");
+    );
+
+    const nonReturnedItems = order.items.filter(
+      (item) => item.status !== "returned"
+    );
+
+    if (nonReturnedItems.length < 2) {
+      order.status = "Returned";
+
+      await orderModel.updateOne(
+        { _id: orderId, "items.productId": order.items[itemIndex].productId },
+        {
+          $set: {
+            "items.$.status": "returned",
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      await order.save();
+      return res.redirect(`/singleOrder/${orderId}`);
+    }
+
+    const result = await orderModel.updateOne(
+      { _id: orderId, "items.productId": order.items[itemIndex].productId },
+      {
+        $set: {
+          "items.$.status": "returned",
+          totalPrice: order.totalPrice - order.items[itemIndex].price,
+          updatedAt: new Date(),
+        },
       }
+    );
 
-      const refund=order.items[itemIndex].price;
-      console.log("refundAmount",refund)
-
-      const currentWallet = user.wallet; 
-      const newWallet = currentWallet + refund;
-      const amountUpdate = await walletModel.updateOne(
-          { userId: userId },
-          {
-            $set: { wallet: newWallet },
-            $push: {
-              walletTransactions: {
-                reason:"ordered item returned",
-                date: new Date(),
-                type: 'Credited', 
-                amount: refund, 
-              },
-            },
-          }
-        ); 
-  
-
-      const nonReturnedItems = order.items.filter(item => item.status !== 'returned');
-
-
-      if (nonReturnedItems.length < 2) {
-
-          order.status='Returned'
-
-          await orderModel.updateOne(
-              { _id: orderId ,'items.productId': order.items[itemIndex].productId},
-              {
-                $set: {
-                  'items.$.status': 'returned', 
-                  updatedAt: new Date(),
-                },
-              }
-            );
-
-       await order.save()
-     return res.redirect(`/singleOrder/${orderId}`)
-        
-      }
-  
-   
-      const result = await orderModel.updateOne(
-          { _id: orderId ,'items.productId': order.items[itemIndex].productId},
-          {
-            $set: {
-              'items.$.status': 'returned', 
-              totalPrice: order.totalPrice - order.items[itemIndex].price,
-              updatedAt: new Date(),
-            },
-          }
-        );
-  
-      res.redirect(`/singleOrder/${orderId}`)
-  
-  
-      
-      }
-      catch(err){
-          console.log(err);
-          res.send("couldnt cancel")
-      }
-}
+    res.redirect(`/singleOrder/${orderId}`);
+  } catch (err) {
+    console.log(err);
+    res.send("couldnt cancel");
+  }
+};
 
 const singleOrderPage = async (req, res) => {
   try {
@@ -610,7 +605,7 @@ const orderReturn = async (req, res) => {
         $set: { wallet: newWallet },
         $push: {
           walletTransactions: {
-            reason:"Order returned",
+            reason: "Order returned",
             date: new Date(),
             type: "Credited",
             amount: refund,
@@ -618,8 +613,11 @@ const orderReturn = async (req, res) => {
         },
       }
     );
+    let date=moment()
 
     const result = await orderModel.findOne({ _id: id });
+    result.updatedAt=date.toLocaleString()
+    await result.save()
 
     const items = result.items.map((item) => ({
       productId: item.productId,
@@ -797,25 +795,27 @@ const addtocartviafav = async (req, res) => {
 
 const wallet = async (req, res) => {
   try {
-  const userId = req.session.userId;
-  const categories = await catModel.find({});
-  const user = await walletModel.findOne({ userId: userId }).sort({ 'walletTransactions.date': -1});
-  
-  if (!user) {
+    const userId = req.session.userId;
+    const categories = await catModel.find({});
+    const user = await walletModel
+      .findOne({ userId: userId })
+      .sort({ "walletTransactions.date": -1 });
+
+    if (!user) {
       user = await walletModel.create({ userId: userId });
-  }
-  
-  const userWallet = user.wallet;
-  console.log(user.walletTransactions)
-  const usertransactions=user.walletTransactions.reverse()
-  
-  res.render("users/wallet", { categories, userWallet ,usertransactions});
+    }
+
+    const userWallet = user.wallet;
+    console.log(user.walletTransactions);
+    const usertransactions = user.walletTransactions.reverse();
+
+    res.render("users/wallet", { categories, userWallet, usertransactions });
   } catch (err) {
-  console.log(err);
+    console.log(err);
     res.status(500).send("Internal Server Error");
   }
 };
-const instance = new Razorpay({ key_id: key_id, key_secret: key_secret });
+const instance = new Razorpay({ key_id: KEY_ID, key_secret: key_secret });
 
 const walletupi = async (req, res) => {
   console.log("body:", req.body);
@@ -839,7 +839,7 @@ const walletTopup = async (req, res) => {
     const wallet = await walletModel.findOne({ userId: userId });
     wallet.wallet += Amount;
     wallet.walletTransactions.push({
-      reason:"Wallet topup",
+      reason: "Wallet topup",
       type: "Credited",
       amount: Amount,
       date: new Date(),
@@ -855,14 +855,12 @@ const walletTopup = async (req, res) => {
 
 const downloadInvoice = async (req, res) => {
   try {
-    const orderId = req.params.orderId
-    console.log(orderId)
-    const order=await orderModel.findOne({orderId:orderId})
-   
-
+    const orderId = req.params.orderId;
+    console.log(orderId);
+    const order = await orderModel.findOne({ orderId: orderId });
 
     // Replace the following line with logic to fetch order details and generate dynamic HTML
-    const orderHistoryContent =` <!DOCTYPE html>
+    const orderHistoryContent = ` <!DOCTYPE html>
     <html lang="en">
     
     <head>
@@ -885,21 +883,32 @@ const downloadInvoice = async (req, res) => {
                         <div class="card-body">
                             <div class="row mb-4">
                                 <div class="col-sm-6">
-                                    <h5>Order ID: ${ order.orderId }</h5>
-                                    <h5>Order Status: ${ order.status }</h5>
+                                    <h5>Order ID: ${order.orderId}</h5>
+                                    <h5>Order Status: ${order.status}</h5>
                                 </div>
                                 <div class="col-sm-6 text-sm-right">
-                                    <h5>Order Date: ${order.createdAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }</h5>
-                                    <h5>Payment Method:${order.paymentMethod }</h5>
+                                    <h5>Order Date: ${order.createdAt.toLocaleString(
+                                      "en-US",
+                                      {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric",
+                                      }
+                                    )}</h5>
+                                    <h5>Payment Method:${
+                                      order.paymentMethod
+                                    }</h5>
                                 </div>
                             </div>
     
                             <div class="mb-4">
                                 <h5>Shipping Address</h5>
-                                <p>${order.shippingAddress.fullname }<br>
-                                    ${ order.shippingAddress.adname }, ${ order.shippingAddress.street }<br>
-                                    ${ order.shippingAddress.city }, ${ order.shippingAddress.pincode }<br>
-                                    ${ order.shippingAddress.phonenumber }
+                                <p>${order.shippingAddress.fullname}<br>
+                                    ${order.shippingAddress.adname}, 
+                                    ${order.shippingAddress.street}<br>
+                                    ${order.shippingAddress.city}, 
+                                    ${order.shippingAddress.pincode}<br>
+                                    ${order.shippingAddress.phonenumber}
                                 </p>
                             </div>
     
@@ -915,16 +924,20 @@ const downloadInvoice = async (req, res) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    ${order.items.map(item => `
+                                    ${order.items
+                                      .map(
+                                        (item) => `
                                     <tr>
                                         <td>${item.productName}</td>
                                         <td>${item.singleprice}</td>
                                         <td>${item.quantity}</td>
                                         <td>${item.price}</td>
-                                    </tr>`).join('')}
+                                    </tr>`
+                                      )
+                                      .join("")}
                                         <tr>
                                             <td colspan="3">Total After Discount</td>
-                                            <td>${ order.totalPrice }</td>
+                                            <td>${order.totalPrice}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -948,43 +961,47 @@ const downloadInvoice = async (req, res) => {
     const browser = await puppeteer.launch({ headless: "new" });
     const page = await browser.newPage();
 
-    await page.setContent(orderHistoryContent, { waitUntil: 'domcontentloaded' });
+    await page.setContent(orderHistoryContent, {
+      waitUntil: "domcontentloaded",
+    });
 
-    const pdfBuffer = await page.pdf({ format: 'A4' });
+    const pdfBuffer = await page.pdf({ format: "A4" });
 
     await browser.close();
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=order_invoice_${req.params.orderId}.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=order_invoice_${req.params.orderId}.pdf`
+    );
 
     res.send(pdfBuffer);
-    
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    res.status(500).send('Internal Server Error');
+    console.error("Error generating PDF:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
-const couponsAndRewards=async (req,res)=>{
-  try{
-
-      const userId = req.session.userId;
-      console.log(userId);
-      const user = await userModel.findById(userId);
-      const coupons = await couponModel.find({
-        couponCode: { $nin: user.usedCoupons },
-        status:true
-      });
-      const categories=await catModel.find()
-      res.render('users/rewardsPage',{categories,coupons,referralCode:userId})
+const couponsAndRewards = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    console.log(userId);
+    const user = await userModel.findById(userId);
+    const coupons = await couponModel.find({
+      couponCode: { $nin: user.usedCoupons },
+      status: true,
+    });
+    const categories = await catModel.find();
+    res.render("users/rewardsPage", {
+      categories,
+      coupons,
+      referralCode: userId,
+    });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
   }
-  catch(err){
-      console.log(err);
-      res.send(err)
-  }
-}
-
-
+};
 
 module.exports = {
   userdetails,
@@ -1010,5 +1027,5 @@ module.exports = {
   itemcancelling,
   itemreturning,
   downloadInvoice,
-  couponsAndRewards
+  couponsAndRewards,
 };

@@ -1,50 +1,39 @@
-const productModel=require('../../model/product_model')
-const userModel=require('../../model/user_model')
+const productModel = require("../../model/product_model");
+const userModel = require("../../model/user_model");
 
+const ratePage = async (req, res) => {
+  try {
+    const { id, rating, review } = req.query;
+    const userId = req.session.userId;
 
-const ratePage=async(req,res)=>{
-    try{
-        const{id,rating,review}=req.query
-        const userId=req.session.userId
+    const productId = id;
 
-       
-            
-            
-            const productId = id;
-            
-            
-            const product = await productModel.findById(productId);
-          
-            if (!product) {
-              return res.status(404).send('Product not found');
-            }
-          
-            
-            const existingUserRating = product.userRatings.find((userRating) => userRating.userId.toString() === userId);
+    const product = await productModel.findById(productId);
 
-            if (existingUserRating) {
-                existingUserRating.rating = rating;
-                existingUserRating.review = review;
-            } else {
-                product.userRatings.push({ userId, rating, review });
-            }
-            
-            await product.save();
-          
-            res.status(200).send('Rating and review saved successfully');
-          
-          
-
-        
-
-        }
-    catch(err){
-        console.log(err);
-        res.send("cant get ratepage")
+    if (!product) {
+      return res.status(404).send("Product not found");
     }
-}
 
+    const existingUserRating = product.userRatings.find(
+      (userRating) => userRating.userId.toString() === userId
+    );
 
-module.exports={
-    ratePage
-}
+    if (existingUserRating) {
+      existingUserRating.rating = rating;
+      existingUserRating.review = review;
+    } else {
+      product.userRatings.push({ userId, rating, review });
+    }
+
+    await product.save();
+
+    res.redirect('/orderhistory')
+  } catch (err) {
+    console.log(err);
+    res.send("cant get ratepage");
+  }
+};
+
+module.exports = {
+  ratePage,
+};

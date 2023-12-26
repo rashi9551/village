@@ -34,7 +34,7 @@ usrouter.get("/logout",logedtohome, usercontroller.logout);
 usrouter.get("/cartpage",loged,cartcontroller.showcart)
 usrouter.get("/addtocart/:id",loged,cartcontroller.addtocart)
 usrouter.get("/deletcart/:id",loged,cartcontroller.deletecart)
-usrouter.post("/update-cart-quantity/:productId",session.loged,cartcontroller.updatecart)
+usrouter.post("/update-cart-quantity/:productId",loged,cartcontroller.updatecart)
 usrouter.get("/checkoutpage",loged,cartcontroller.checkoutpage)
 usrouter.post("/checkoutreload",loged,checkoutcontroller.checkoutreload)
 usrouter.post('/wallettransaction',loged,checkoutcontroller.wallettransaction)

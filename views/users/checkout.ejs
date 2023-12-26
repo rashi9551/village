@@ -1,6 +1,6 @@
 <!-- /*
 * Bootstrap 5
-* Template Name: Furni
+* Template Name: village
 * Template Author: Untree.co
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
@@ -316,7 +316,7 @@
 <div id="couponModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal()">&times;</span>
-    <ul>
+    <ul><% if(availableCoupons.length>=0){%>
       <% availableCoupons.forEach(coupon => { %>
         <li>
 			<div class="row">
@@ -334,6 +334,7 @@
 			</div>
         </li>
       <% }); %>
+	  <%};%>
     </ul>
   </div>
 </div>
@@ -561,7 +562,7 @@ console.log("upi total","ppppppp");
 var options = {
 "key": 'rzp_test_tY3tynQ51qUYZR', 
 "amount":  amountToPay*100, 
-"name": "Furnify",
+"name": "village",
 "description": "Test Transaction",
 "image": "Urban Sole",
 "order_id": orderId, 
@@ -691,6 +692,20 @@ function couponApply() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+			Swal.fire({
+          text: data.message,
+          icon: 'succes',
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'text-danger',
+            popup: 'swal2-popup-custom',
+            confirmButton: 'btn btn-danger'
+          },
+          showCancelButton: false,
+          showCloseButton: true,
+          showLoaderOnConfirm: false,
+          timer: 3000
+        });
 			console.log("ivideumethi")
 			document.getElementById('dicprice').innerText="-"+data.dicprice
            document.getElementById('cartotal').innerText=data.price
@@ -736,6 +751,20 @@ function couponApply() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+			Swal.fire({
+          text: "coupon revoked",
+          icon: 'success',
+          confirmButtonText: 'OK',
+          customClass: {
+            title: 'text-danger',
+            popup: 'swal2-popup-custom',
+            confirmButton: 'btn btn-danger'
+          },
+          showCancelButton: false,
+          showCloseButton: true,
+          showLoaderOnConfirm: false,
+          timer: 3000
+        });
 			document.getElementById('dicprice').innerText=0
            document.getElementById('cartotal').innerText=data.price
 		   document.getElementById('carttotal').value=data.price

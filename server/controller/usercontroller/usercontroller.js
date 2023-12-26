@@ -19,6 +19,7 @@ const pass=process.env.pass
 const catModel = require("../../model/category_model");
 const productModel = require("../../model/product_model");
 const { product } = require("../admincontroller/productcontroller");
+const couponModel = require("../../model/coupon_model");
 
 
 // otp generating function 
@@ -83,27 +84,24 @@ const bannerURL=async(req,res)=>{
   try{
 
       const bannerId=req.query.id
-      console.log(bannerId);
       const banner=await bannerModel.findOne({_id:bannerId})
+      console.log("ithhahnu mwoney",banner.bannerLink);
       if(banner.label=="category"){
-        console.log("ithu banner link",banner.bannerLink)
-          const categoryId=new mongoose.Types.ObjectId(banner.bannerlink)
+          const categoryId=banner.bannerlink
           const  category=await catModel.findOne({_id: categoryId})
           res.redirect(`/shop/?category=${categoryId}`)
           
       }
       else if(banner.label=="product"){
-        console.log("ithu banner link",banner.bannerLink)
-          const productId=new mongoose.Types.ObjectId(banner.bannerlink)
+          const productId=new mongoose.Types.ObjectId(banner.bannerLink)
           const  product=await productModel.findOne({_id: productId})
-          console.log("product indo",product)
           res.redirect(`/singleproduct/${productId}`)
       
       }
       else if(banner.label=="coupon"){
           const couponId=new mongoose.Types.ObjectId(banner.bannerlink)
           const  coupon=await couponModel.findOne({_id: couponId})
-          res.redirect("/profile")
+          res.redirect("/Rewards")
       
       }
       else{
