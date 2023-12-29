@@ -10,9 +10,14 @@ const session=require('express-session')
 const multer=require("multer")
 const mongoose=require("mongoose")
 const adminrouter=require("./server/routers/admin")
+const flash=require('express-flash')
 const { error } = require("console")
 
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(process.env.MONGO_URL).then((s)=>{
+  console.log("connected");
+}).catch((error)=>{
+  console.log(error);
+})
 
 
 const port=process.env.PORT
@@ -29,7 +34,7 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-
+app.use(flash());
 app.use(express.static(__dirname +'/public'))
 app.use(express.static(__dirname +'/public/userAssets'))
 app.use(express.static(__dirname +'/public/adminAssets'))

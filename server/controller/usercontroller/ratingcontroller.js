@@ -1,5 +1,4 @@
 const productModel = require("../../model/product_model");
-const userModel = require("../../model/user_model");
 
 const ratePage = async (req, res) => {
   try {
@@ -27,7 +26,7 @@ const ratePage = async (req, res) => {
 
     await product.save();
 
-    res.redirect('/orderhistory')
+    res.redirect("/orderhistory");
   } catch (err) {
     console.log(err);
     res.send("cant get ratepage");

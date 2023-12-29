@@ -1,5 +1,6 @@
 const adminmodel = require("../../model/user_model");
 const categoryModel = require("../../model/category_model");
+const flash=require('express-flash')
 
 
 const category = async (req, res) => {
@@ -16,7 +17,12 @@ const category = async (req, res) => {
   // admin new category page
   const newcat = async (req, res) => {
     try {
-        res.render("admin/addcategories");
+        res.render("admin/addcategories",{
+          expressFlash: {
+            
+            caterror: req.flash('caterror')
+          }
+        });
      
     } catch (error) {
       console.log(error);
@@ -28,12 +34,14 @@ const category = async (req, res) => {
     try {
       const catName = req.body.categoryName;
       const catDes = req.body.description;
-  
-      const categoryExists = await categoryModel.findOne({ name: catName });
+        
+      const categoryExists = await categoryModel.findOne({ name:{ $regex: new RegExp("^" + catName + "$", "i") }});
+      console.log(categoryExists);
   
       if (categoryExists) {
           console.log("Category exists");
-          res.redirect('/admin/category');
+          req.flash('caterror','category Already Exists')
+          res.redirect('/admin/newcat')
       } else {
           await categoryModel.create({ name: catName, description: catDes });
           console.log("Category created");

@@ -279,7 +279,7 @@
     <!-- Start Header Area -->
     <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
         <div class="container">
-            <a class="navbar-brand" href="/">Furnify<span>.</span></a>
+            <a class="navbar-brand" href="/">Village<span>.</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni"
                 aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -359,7 +359,7 @@
                     <h3>Order Address</h3>
                     <p style="font-size: 20px;"><%=order.shippingAddress.fullname%><br><%=order.shippingAddress.adname%>&nbsp;,&nbsp;<%=order.shippingAddress.street%><br><%=order.shippingAddress.city%>&nbsp;,&nbsp;<%=order.shippingAddress.pincode%><br><%=order.shippingAddress.phonenumber%></p>
 
-                    <a href="#" class="btn btn-link">Edit Address</a>
+                    <a href="/editaddress/<%=order.shippingAddress._id%>" class="btn btn-link">Edit Address</a>
                 </div>
             </div>
 

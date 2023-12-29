@@ -100,6 +100,7 @@ const updateCoupon=async(req,res)=>{
                     }
                 }
                 
+                
             );
         
             console.log("COUPON created");

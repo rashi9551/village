@@ -50,8 +50,11 @@
                         <label for="description" class="form-label">Description:</label>
                         <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                     </div>
+                    <% if(expressFlash.caterror){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.caterror%></div>
+                  <%}%>
         
-                    <button type="submit" class="btn btn-primary">Add Category</button>
+                    <button type="submit" class="btn btn-primary mt-5">Add Category</button>
                 </form>
             </div>
           

@@ -145,7 +145,7 @@
 					<% cart.item.forEach((item, index) => { %>
 					  <tr>
 						<td class="product-thumbnail">
-						  <img src="<%= item.productId.images[0] %>" alt="Image" class="img-fluid">
+						  <a href="/singleproduct/<%=item.productId._id%>"><img src="<%= item.productId.images[0] %>" alt="Image" class="img-fluid"></a>
 						</td>
 						<td class="product-name">
 						  <h2 class="h5 text-black"><%= item.productId.name %></h2>
@@ -153,9 +153,9 @@
 						<td><%= item.productId.price %></td>
 						<td>
               <div class="product_count">
-                  <input type="text" name="qty" id="sst<%= index%>" maxlength="12"
+                  <input type="number" name="qty" id="sst<%= index%>" maxlength="12"
                       value="<%= item.quantity %>" title="Quantity:"
-                      class="input-text qty">
+                      class="input-text qty" readonly>
                   <button
                       onclick="updateQuantity('<%= cart._id %>','<%= item._id %>','<%= item.price %>','<%= index %>' , 1 )"
                       class="increase items-count" type="button">
@@ -205,6 +205,7 @@
         <span class="text-black">Total</span>
       </div>
       <div class="col-md-6 text-right">
+        <% if (cart && cart.item && cart.item.length > 0) { %>
         <strong class="text-black"id="total"><%= cart && cart.total ? cart.total : 0 %>
         </strong>
       </div>
@@ -219,6 +220,8 @@
     </div>
   </div>
 </div>
+<% } %>
+
 <!-- End Cart Totals -->
 
 </div>

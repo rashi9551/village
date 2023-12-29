@@ -210,7 +210,7 @@
 console.log("upi total","ppppppp");
 
 var options = {
-"key": 'rzp_test_tY3tynQ51qUYZR', // Enter the Key ID generated from the Dashboard
+"key": 'rzp_test_2dpUf4O8fP4gpf', // Enter the Key ID generated from the Dashboard
 "amount":  amountToPay*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
 "currency": "INR",
 "name": "village",
@@ -218,7 +218,6 @@ var options = {
 "image": "Urban Sole",
 "order_id": orderId, //This is a sample Order ID. Pass the id obtained in the response of Step 1
 "handler": function (response){
-alert(response.razorpay_payment_id);
 document.getElementById('orderForm').action = '/walletTopup';
 document.getElementById('orderForm').method = 'post'; // Replace with your actual URL
 
@@ -235,12 +234,6 @@ document.getElementById('orderForm').submit();
 var rzp1 = new Razorpay(options);
 rzp1.on('payment.failed', function (response){
         alert(response.error.code);
-        alert(response.error.description);
-        alert(response.error.source);
-        alert(response.error.step);
-        alert(response.error.reason);
-        alert(response.error.metadata.order_id);
-        alert(response.error.metadata.payment_id);
 });
     rzp1.open();
 

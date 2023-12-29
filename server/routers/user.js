@@ -7,14 +7,18 @@ const profilecontroller=require("../controller/usercontroller/profilecontroller"
 const cartcontroller=require("../controller/usercontroller/cartcontroller")
 const checkoutcontroller=require("../controller/usercontroller/checkoutcontroller")
 const ratingcontrol=require("../controller/usercontroller/ratingcontroller")
+const orderCountrol=require("../controller/usercontroller/ordercontroller")
+const walletCountrol=require("../controller/usercontroller/walletcontroller")
+const couponControl=require('../controller/usercontroller/couponcontroller')
+const productControl=require('../controller/usercontroller/productcontroller')
 const {loged,signforgot,forgot,logedtohome}=session
 
 usrouter.get("/", usercontroller.index);
 usrouter.get("/shop", usercontroller.shop);
-usrouter.post("/searchProducts",usercontroller.searchProducts)
-usrouter.get('/filterProducts',usercontroller.filterProducts)
-usrouter.get("/sortProducts",usercontroller.sortProducts)
-usrouter.get("/singleproduct/:id", usercontroller.singleproduct);
+usrouter.post("/searchProducts",productControl.searchProducts)
+usrouter.get('/filterProducts',productControl.filterProducts)
+usrouter.get("/sortProducts",productControl.sortProducts)
+usrouter.get("/singleproduct/:id", productControl.singleproduct);
 
 usrouter.get("/profile",loged,usercontroller.profile);
 usrouter.get("/signup", usercontroller.signup);
@@ -35,7 +39,7 @@ usrouter.get("/cartpage",loged,cartcontroller.showcart)
 usrouter.get("/addtocart/:id",loged,cartcontroller.addtocart)
 usrouter.get("/deletcart/:id",loged,cartcontroller.deletecart)
 usrouter.post("/update-cart-quantity/:productId",loged,cartcontroller.updatecart)
-usrouter.get("/checkoutpage",loged,cartcontroller.checkoutpage)
+usrouter.get("/checkoutpage",loged,checkoutcontroller.checkoutpage)
 usrouter.post("/checkoutreload",loged,checkoutcontroller.checkoutreload)
 usrouter.post('/wallettransaction',loged,checkoutcontroller.wallettransaction)
 usrouter.post("/placeorder",loged,checkoutcontroller.placeorder)
@@ -57,14 +61,15 @@ usrouter.get("/deleteaddress/:addressId",loged,profilecontroller.deleteAddress)
 
 usrouter.post("/cp",loged,profilecontroller.changepassword)
 
-usrouter.get("/orderhistory",loged,profilecontroller.orderhistory)
-usrouter.get("/cancelorder/:id",loged,profilecontroller.ordercancelling)
-usrouter.get('/cancelitem/:id/:orderId',loged,profilecontroller.itemcancelling)
-usrouter.get('/returnitem/:id/:orderId',loged,profilecontroller.itemreturning)
+usrouter.get("/orderhistory",loged,orderCountrol.orderhistory)
+usrouter.get("/cancelorder/:id",loged,orderCountrol.ordercancelling)
+usrouter.get('/cancelitem/:id/:orderId',loged,orderCountrol.itemcancelling)
+usrouter.get('/returnitem/:id/:orderId',loged,orderCountrol.itemreturning)
+usrouter.get('/returnorder/:id',loged,orderCountrol.orderReturn)
+usrouter.get("/singleorder/:id",loged,orderCountrol.singleOrderPage)
+usrouter.get("/download-invoice/:orderId",loged,orderCountrol.downloadInvoice)
+
 usrouter.get('/rateAndReview',loged,ratingcontrol.ratePage)
-usrouter.get('/returnorder/:id',loged,profilecontroller.orderReturn)
-usrouter.get("/singleorder/:id",loged,profilecontroller.singleOrderPage)
-usrouter.get("/download-invoice/:orderId",loged,profilecontroller.downloadInvoice)
 
 
 usrouter.get("/favouritespage",loged,profilecontroller.favouritespage)
@@ -72,13 +77,13 @@ usrouter.get("/addtofavourites/:id",loged,profilecontroller.addtofavourite)
 usrouter.get("/deletefav/:id",loged,profilecontroller.deletefav)
 usrouter.get("/addtocartviafav/:id",loged,profilecontroller.addtocartviafav)
 
-usrouter.get('/wallet',loged,profilecontroller.wallet)
-usrouter.post('/walletcreate/orderId',loged,profilecontroller.walletupi)
-usrouter.post('/walletTopup',loged,profilecontroller.walletTopup)
+usrouter.get('/wallet',loged,walletCountrol.wallet)
+usrouter.post('/walletcreate/orderId',loged,walletCountrol.walletupi)
+usrouter.post('/walletTopup',loged,walletCountrol.walletTopup)
 
-usrouter.get("/Rewards",loged,profilecontroller.couponsAndRewards)
-usrouter.post("/applyCoupon",loged,checkoutcontroller.applyCoupon)
-usrouter.post("/revokeCoupon",loged,checkoutcontroller.recokeCoupon)
+usrouter.get("/Rewards",loged,couponControl.couponsAndRewards)
+usrouter.post("/applyCoupon",loged,couponControl.applyCoupon)
+usrouter.post("/revokeCoupon",loged,couponControl.recokeCoupon)
 
 
 
