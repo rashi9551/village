@@ -6,12 +6,12 @@ const orderModel = require("../../model/order_model");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
-const shortid = require("shortid");
 const KEY_ID = process.env.KEY_ID;
 const key_secret = process.env.key_secret;
 const couponModel = require("../../model/coupon_model");
 const walletModel = require("../../model/wallet_Model");
 const moment = require("moment");
+const shortid = require('short-unique-id');
 let date = moment();
 
 const checkoutreload = async (req, res) => {

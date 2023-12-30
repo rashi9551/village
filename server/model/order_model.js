@@ -1,6 +1,6 @@
 const mongoose=require("mongoose")
 const Schema=mongoose.Schema
-const shortid=require("shortid")
+const shortid=require("short-unique-id")
 
 
 
