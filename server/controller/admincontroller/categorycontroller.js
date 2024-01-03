@@ -10,7 +10,7 @@ const category = async (req, res) => {
       
     } catch (error) {
       console.log(error);
-      res.send(error);
+      res.render("users/serverError");
     }
   };
   
@@ -50,7 +50,7 @@ const category = async (req, res) => {
      
     } catch (error) {
       console.log(error);
-      res.send(error);
+      res.render("users/serverError");
     }
   };
   
@@ -65,7 +65,7 @@ const category = async (req, res) => {
      
     } catch (error) {
       console.log(error);
-      res.send(error);
+      res.render("users/serverError");
     }
   };
   
@@ -78,7 +78,7 @@ const category = async (req, res) => {
       
     } catch (error) {
       console.log(error);
-      res.send(error);
+      res.render("users/serverError");
     }
   };
   
@@ -97,7 +97,7 @@ const category = async (req, res) => {
       
     } catch (error) {
       console.log(error);
-      res.send(error);
+      res.render("users/serverError");
     }
   };
 

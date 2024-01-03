@@ -4,6 +4,10 @@ const productModel = require("../../model/product_model");
 const categoryModel = require("../../model/category_model");
 const fs = require("fs");
 const path = require("path");
+const flash=require("express-flash")
+
+const {alphanumValid,
+      onlyNumbers}=require("../../../utils/validators/admin_validator")
 
 
 // product page rendering 
@@ -16,7 +20,7 @@ const product = async (req, res) => {
     res.render("admin/product", { product: products });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -25,16 +29,115 @@ const newproduct = async (req, res) => {
   try {
     const categories = await categoryModel.find({});
     console.log("categories"), categories;
-    res.render("admin/newproduct", { category: categories });
-  } catch (error) {}
+    res.render("admin/newproduct", { category: categories,productInfo:req.session.productInfo,expressFlash:{
+      productNameError:req.flash("productNameError"),
+      parentCategoryError:req.flash("parentCategoryError"),
+      productTypeError:req.flash("productTypeError"),
+      stockError:req.flash("stockError"),
+      priceError:req.flash("priceError"),
+      discountError:req.flash("discountError"),
+      descriptionError:req.flash("descriptionError"),
+      mrpError:req.flash("mrpError"),
+      heightError:req.flash("heightError"),
+      widthError:req.flash("widthError"),
+      sidelengthError:req.flash("sideLengthError"),
+      weightError:req.flash("weightError"),
+      madeOfError:req.flash("madeofError"),
+      colorError:req.flash("colorError"),
+      manufacturerError:req.flash("manufacturerError")  
+    }});
+  } catch (error) {
+    console.log(error);
+    res.render("users/serverError");
+  }
 };
 
 // new adding product  
 const addproduct = async (req, res) => {
   try {
-    const { productName, parentCategory, images,productType, stock,price, description , mrp,height,width,sidelength,weight,madeOf,color,manufacturer} = req.body
+    const { productName, parentCategory, images,productType,discount, stock,price, description , mrp,height,width,sidelength,weight,madeOf,color,manufacturer} = req.body
 
 
+    const productNameValid= alphanumValid(productName)
+    const productTypeValid= alphanumValid(productType)
+    const stockValid= onlyNumbers(stock) 
+    const priceValid = onlyNumbers(price)
+    const descriptionValid = alphanumValid(description)
+    const mrpValid = onlyNumbers(mrp)
+    const parentCategoryValid = alphanumValid(parentCategory)
+    const discountValid = onlyNumbers(discount)
+    const heightValid =  onlyNumbers(height)
+    const weightValid = onlyNumbers(weight)
+    const widthValid = onlyNumbers(width)
+    const sidelengthValid = onlyNumbers(sidelength)
+    const madeofValid = alphanumValid(madeOf)
+    const colorValid = alphanumValid(color)
+    const manufacturerValid = alphanumValid(manufacturer)
+
+    req.session.productInfo=req.body
+
+    if(!productNameValid){
+        req.flash("productNameError","Enter Valid Data")
+        return res.redirect('/admin/newproduct')
+    }
+    else if(!productTypeValid){
+      req.flash("productTypeError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!stockValid){
+      req.flash("stockError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!priceValid){
+      req.flash("priceError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!descriptionValid){
+      req.flash("descriptionError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!mrpValid){
+      req.flash("mrpError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!parentCategoryValid){
+      req.flash("parentCategoryError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!discountValid){
+      req.flash("discountError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!heightValid){
+      req.flash("heightError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!weightValid){
+      req.flash("weightError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!widthValid){
+      req.flash("widthError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!sidelengthValid){
+      req.flash("sidelengthError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!madeofValid){
+      req.flash("madeofError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!colorValid){
+      req.flash("colorError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+    else if(!manufacturerValid){
+      req.flash("manufacturerError","Enter Valid Data")
+      return res.redirect("/admin/newproduct")
+    }
+
+    req.session.productInfo=null
 
         const newproduct = new productModel({
             name: productName,
@@ -45,6 +148,7 @@ const addproduct = async (req, res) => {
             stock: stock,
             description: description,
             mrp:mrp,
+            discount:discount,
             height:height,
             weight:weight,
             width:width,
@@ -62,7 +166,7 @@ const addproduct = async (req, res) => {
         res.redirect('/admin/product')
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -72,10 +176,6 @@ const unlist = async (req, res) => {
     const id = req.params.id;
     const product = await productModel.findById(id);
 
-    if (!product) {
-      return res.status(404).send("Product not found");
-    }
-
     console.log(product);
 
     product.status = !product.status;
@@ -83,7 +183,7 @@ const unlist = async (req, res) => {
     res.redirect("/admin/product");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Internal Server Error");
+    res.render("users/serverError");
   }
 };
 

@@ -76,6 +76,7 @@ const ordercancelling = async (req, res) => {
       const user = await walletModel.findOne({ userId: userId });
 
       const refund = result.totalPrice;
+      console.log(user);
 
       const currentWallet = user.wallet;
       console.log(currentWallet);

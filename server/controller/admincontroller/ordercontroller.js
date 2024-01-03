@@ -7,6 +7,7 @@ const orderPage=async(req,res)=>{
         console.log(orders);
     } catch (error) {
         console.log(error);
+        res.render("users/serverError");
     }
 }
 const updateorderstatus=async(req,res)=>{
@@ -23,6 +24,8 @@ const updateorderstatus=async(req,res)=>{
         res.redirect('admin/orderPage')
     } catch (error) {
         console.log(error);
+        res.render("users/serverError");
+
     }
 }
 

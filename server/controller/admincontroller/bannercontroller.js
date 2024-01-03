@@ -13,6 +13,8 @@ const bannerList=async(req,res)=>{
         
     } catch (error) {
         console.log(error);
+        res.render("users/serverError");
+
         
     }
 }
@@ -29,7 +31,7 @@ const addbanner=async(req,res)=>{
         
     } catch (error) {
         console.log(err);
-        res.send("Error Occurred");
+        res.render("users/serverError");
     }
 }
 
@@ -70,7 +72,7 @@ const addBannerPost=async(req,res)=>{
         
     } catch (error) {
         console.log(error);
-        res.send("Error Occurred");     
+        res.render("users/serverError");
     }
 }
 
@@ -83,7 +85,7 @@ const unlistBanner=async(req,res)=>{
         res.redirect('/admin/bannerList')
     } catch (error) {
         console.log(error);
-        res.send("Error Occurred");  
+        res.render("users/serverError");
     }
 }
 
@@ -99,7 +101,7 @@ const updateBanner=async(req,res)=>{
         
     } catch (error) {
         console.log(error);
-        res.send(error)
+        res.render("users/serverError");
         
     }
 }
@@ -108,7 +110,7 @@ const updateBannerPost=async(req,res)=>{
     try {
         const id = req.params.id
         const { bannerLabel,bannerTitle,bannerSubtitle,bannerImage } = req.body
-        console.log("the filke is here",req.file);
+        console.log("the file is here",req.file);
         const banner=await bannerModel.findOne({_id:id})
 
         let bannerLink;
@@ -143,7 +145,7 @@ const updateBannerPost=async(req,res)=>{
         res.redirect('/admin/bannerList')
         } catch (error) {
         console.log(error);
-        res.send("Error Occurred");   
+        res.render("users/serverError");
     }
 }
 
@@ -154,7 +156,7 @@ const deleteBanner=async(req,res)=>{
         res.redirect('/admin/bannerList')
     } catch (error) {
         console.log(error)
-        res.send(error)
+        res.render("users/serverError");
         
     }
 }

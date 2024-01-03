@@ -117,6 +117,7 @@ const shop = async (req, res) => {
     );
     const categoryName = ctCategory ? ctCategory.name : null;
     const theCategory = await catModel.find({ _id: category });
+    
     res.render("users/shop", {
       theCategory,
       categoryName,

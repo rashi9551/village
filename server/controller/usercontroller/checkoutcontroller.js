@@ -11,7 +11,7 @@ const key_secret = process.env.key_secret;
 const couponModel = require("../../model/coupon_model");
 const walletModel = require("../../model/wallet_Model");
 const moment = require("moment");
-const shortid = require('short-unique-id');
+const { default: ShortUniqueId } = require('short-unique-id');
 let date = moment();
 
 const checkoutreload = async (req, res) => {
@@ -123,18 +123,20 @@ const placeorder = async (req, res) => {
       quantity: parseInt(req.body.selectedQuantities[index]),
       price: parseInt(req.body.selectedCartTotals[index]),
     }));
-    const order = new orderModel({
-      orderId: shortid.generate(),
-      userId: userId,
-      userName: username,
-      items: items,
-      totalPrice: parseInt(req.body.carttotal),
-      shippingAddress: selectedAddress,
-      paymentMethod: paymentMethod,
-      updatedAt: date.format("YYYY-MM-DD HH:mm"),
-      createdAt: date.format("YYYY-MM-DD HH:mm"),
-      status: "pending",
-    });
+    const uid = new ShortUniqueId();
+
+const order = new orderModel({
+  orderId: uid.randomUUID(6),
+  userId: userId,
+  userName: username,
+  items: items,
+  totalPrice: parseInt(req.body.carttotal),
+  shippingAddress: selectedAddress,
+  paymentMethod: paymentMethod,
+  updatedAt: date.format("YYYY-MM-DD HH:mm"),
+  createdAt: date.format("YYYY-MM-DD HH:mm"),
+  status: "pending",
+});
 
     console.log("items", items);
     await order.save();

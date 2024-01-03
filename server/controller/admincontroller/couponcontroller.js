@@ -25,6 +25,7 @@ const createCoupon=async(req,res)=>{
 }
     catch(err){
         console.log(err);
+        res.render("users/serverError");
     }
 }
 
@@ -35,7 +36,8 @@ const couponList=async(req,res)=>{
 
     }
     catch(err){
-        console.log(err)
+        console.log(err);
+        res.render("users/serverError");
 
     }
 }
@@ -46,6 +48,7 @@ const addcouponpage=async(req,res)=>{
     }
     catch(err){
         console.log(err)
+        res.render("users/serverError");
     }
 }
 
@@ -60,7 +63,7 @@ const unlistCoupon=async (req,res)=>{
     }
     catch(err){
         console.log(err);
-        res.send(err)
+        res.render("users/serverError");
     }
 }
 
@@ -72,7 +75,7 @@ const editCouponPage=async (req,res)=>{
     }
     catch(err){
         console.log(err);
-        res.send(err)
+        res.render("users/serverError");
     }
 }
 
@@ -112,7 +115,7 @@ const updateCoupon=async(req,res)=>{
     }
     catch(err){
         console.log(err);
-        res.send(err)
+        res.render("users/serverError");
     }
 }
 

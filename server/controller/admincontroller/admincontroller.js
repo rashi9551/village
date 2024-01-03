@@ -14,10 +14,13 @@ const puppeteer=require('puppeteer')
 // admin login page
 const login = async (req, res) => {
   try {
+    if(req.session.isadAuth){
+      res.redirect("/admin/adminpannel")
+    }
     res.render("admin/adminlogin.ejs");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    res.render("users/serverError");
   }
 };
 
@@ -37,11 +40,11 @@ const adminlogin = async (req, res) => {
       res.redirect("/admin/adminpannel");
     } else {
       console.log("username thettahnu mwoney");
-      res.render("admin/adminlogin", { passworderror: "invalid password" });
+      res.render("admin/adminlogin", { passworderror: "invalid password/username" });
     }
   } catch (error) {
     console.log(error);
-    res.render("admin/adminlogin", { username: "incorrect username" });
+    res.render("users/serverError");
   }
 };
 
@@ -52,7 +55,7 @@ const adminpannel = async (req, res) => {
     
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -64,7 +67,7 @@ const userslist = async (req, res) => {
       res.render("admin/userslist", { users: user });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -103,7 +106,7 @@ const searchuser = async (req, res) => {
     
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -115,7 +118,7 @@ const searchview = async (req, res) => {
     
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -136,7 +139,7 @@ const filter = async (req, res) => {
     
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 
@@ -294,54 +297,68 @@ const downloadsales = async (req, res) => {
       ]);
 
       const htmlContent = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Sales Report</title>
-              <style>
-                  body {
-                      margin-left: 20px;
-                  }
-              </style>
-          </head>
-          <body>
-              <h2 align="center"> Sales Report</h2>
-              Start Date:${startDate}<br>
-              End Date:${endDate}<br>
-              <center>
-                  <table style="border-collapse: collapse;">
-                      <thead>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Sales Report</title>
+          <style>
+              body {
+                  margin-left: 20px;
+              }
+          </style>
+      </head>
+      <body>
+          <h2 align="center"> Sales Report</h2>
+          Start Date:${startDate}<br>
+          End Date:${endDate}<br> 
+          <center>
+              <table style="border-collapse: collapse;">
+                  <thead>
+                      <tr>
+                          <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+                          <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                          <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      ${products
+                        .map(
+                          (item, index) => `
                           <tr>
-                              <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-                              <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
-                              <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          ${products.map((item, index) => `
-                              <tr>
-                                  <td style="border: 1px solid #000; padding: 8px;">${index + 1}</td>
-                                  <td style="border: 1px solid #000; padding: 8px;">${item.productName}</td>
-                                  <td style="border: 1px solid #000; padding: 8px;">${item.totalSold}</td>
-                              </tr>`).join('')}
-                              <tr>
-                              <td style="border: 1px solid #000; padding: 8px;"></td>
-                              <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
-                              <td style="border: 1px solid #000; padding: 8px;">${salesData[0].totalOrders}</td>
-                          </tr>
+                              <td style="border: 1px solid #000; padding: 8px;">${
+                                index + 1
+                              }</td>
+                              <td style="border: 1px solid #000; padding: 8px;">${
+                                item.productName
+                              }</td>
+                              <td style="border: 1px solid #000; padding: 8px;">${
+                                item.totalSold
+                              }</td>
+                          </tr>`
+                        )
+                        .join("")}
                           <tr>
-                              <td style="border: 1px solid #000; padding: 8px;"></td>
-                              <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
-                              <td style="border: 1px solid #000; padding: 8px;">${salesData[0].totalAmount}</td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </center>
-          </body>
-          </html>
-      `;
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                          <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
+                          <td style="border: 1px solid #000; padding: 8px;">${
+                            salesData[0].totalOrders
+                          }</td>
+                      </tr>
+                      <tr>
+                          <td style="border: 1px solid #000; padding: 8px;"></td>
+                          <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
+                          <td style="border: 1px solid #000; padding: 8px;">${
+                            salesData[0].totalAmount
+                          }</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </center>
+      </body>
+      </html>
+  `;
 
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
@@ -365,8 +382,8 @@ const downloadsales = async (req, res) => {
       res.status(200).end(pdfBuffer);
   } catch (err) {
       console.error(err);
-      res.status(500).send(err.message || 'Internal Server Error');
-  }
+      res.render("users/serverError");
+    }
 };
 
 
