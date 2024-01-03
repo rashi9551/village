@@ -4,7 +4,7 @@ const alphanumValid =(name)=>{
 }
 
 const onlyNumbers =(str)=>{
-    const numbersOnlyRegex =/^[1-9][0-9]*(\.\d+)?$/;
+    const numbersOnlyRegex =/^[1-9][0-9]*(\.[0-9]+)?$/;
     return str.length>0 && numbersOnlyRegex.test(str);
 }
 

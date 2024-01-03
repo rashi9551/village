@@ -10,7 +10,7 @@ const ratePage = async (req, res) => {
     const product = await productModel.findById(productId);
 
     if (!product) {
-      return res.status(404).send("Product not found");
+      res.render("users/serverError")
     }
 
     const existingUserRating = product.userRatings.find(
@@ -29,7 +29,7 @@ const ratePage = async (req, res) => {
     res.redirect("/orderhistory");
   } catch (err) {
     console.log(err);
-    res.send("cant get ratepage");
+    res.render("users/serverError")
   }
 };
 
