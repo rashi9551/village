@@ -21,10 +21,11 @@ const showcart = async (req, res) => {
         total: 0,
       });
     }
+    req.session.checkout=true
     res.render("users/cart", { cart, categories });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -36,6 +37,10 @@ const addtocart = async (req, res) => {
     const price = product.price;
     const stock = product.stock;
     const quantity = 1;
+
+    if (stock==0){
+      res.redirect('/cartpage')
+    }else{
     let cart;
     if (userid) {
       cart = await cartModel.findOne({ userId: userid });
@@ -73,6 +78,7 @@ const addtocart = async (req, res) => {
 
     await cart.save();
     res.redirect("/cartpage");
+  }
   } catch (error) {
     console.log(error);
     res.send(error);
@@ -100,7 +106,7 @@ const deletecart = async (req, res) => {
     res.redirect("/cartpage");
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -173,7 +179,7 @@ const updatecart = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 

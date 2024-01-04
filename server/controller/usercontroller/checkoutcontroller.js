@@ -13,6 +13,8 @@ const walletModel = require("../../model/wallet_Model");
 const moment = require("moment");
 const { default: ShortUniqueId } = require('short-unique-id');
 let date = moment();
+const {bnameValid,adphoneValid,pincodeValid}=require("../../../utils/validators/address_validator")
+const flash=require('express-flash')
 
 const checkoutreload = async (req, res) => {
   try {
@@ -27,31 +29,92 @@ const checkoutreload = async (req, res) => {
       country,
       phone,
     } = req.body;
+    const cartId = req.body.cartId;
+
+    req.session.chadInfo=req.body;
+
     const userId = req.session.userId;
     console.log("userid", req.session.userId);
 
     const existingUser = await userModel.findOne({ _id: userId });
     console.log("exixteing user", existingUser);
+    const fullnamevalid=bnameValid(fullname)
+        const saveasvalid=bnameValid(saveas)
+        const adnameValid=bnameValid(adname)
+        const streetValid=bnameValid(street)
+        const pincodevalid=pincodeValid(pincode)
+        const cityValid=bnameValid(city)
+        const stateValid=bnameValid(state)
+        const countryValid=bnameValid(country)
+        const phoneValid=adphoneValid(phone)
+if(!fullnamevalid)
+{
+req.flash("fullnameerror","Enter a valid name")
+ return res.redirect(`/checkoutpage?cartId=${cartId}`)
+}
+if(!saveasvalid)
+{
+req.flash("saveaserror","Enter a valid addresstype")
+return res.redirect(`/checkoutpage?cartId=${cartId}`)
+}
+if(!adnameValid)
+{
+req.flash("adnameerror","Enter a valid address")
+return res.redirect(`/checkoutpage?cartId=${cartId}`)
+}
+if(!streetValid)
+{
+req.flash("streeterror","enter a valid street")
+return res.redirect(`/checkoutpage?cartId=${cartId}`)
 
-    if (existingUser) {
-      const existingAddress = await userModel.findOne({
-        _id: userId,
-        address: {
+}
+if(!pincodevalid)
+{
+req.flash("pincodeerror","Enter a valid Pincode")
+return res.redirect(`/checkoutpage?cartId=${cartId}`)
+}
+
+if(!cityValid)
+{
+req.flash("cityerror","Enter Valid City")
+return res.redirect(`/checkoutpage?cartId=${cartId}`)
+
+}
+if(!stateValid){
+    req.flash("stateerror","Enter valid state")
+    return res.redirect(`/checkoutpage?cartId=${cartId}`)
+  }
+if(!countryValid){
+    req.flash("countryerror",'Enter valid country')
+    return res.redirect(`/checkoutpage?cartId=${cartId}`)
+  }
+if(!phoneValid){
+    req.flash("phoneerror","Enter valid country ")
+    return res.redirect(`/checkoutpage?cartId=${cartId}`)
+
+}
+
+if (existingUser) {
+  const existingAddress = await userModel.findOne({
+      '_id': userId,
+      'address': {
           $elemMatch: {
-            fullname: fullname,
-            adname: adname,
-            street: street,
-            pincode: pincode,
-            city: city,
-            state: state,
-            country: country,
-            phonenumber: phone,
-          },
-        },
-      });
-      if (existingAddress) {
-        return res.redirect("/addAddress");
+              'fullname': fullname,
+              'adname': adname,
+              'street': street,
+              'pincode': pincode,
+              'city': city,
+              'state': state,
+              'country': country,
+              'phonenumber': phone
+          }
       }
+  });
+      if (existingAddress) {
+        return res.redirect(`/checkoutpage?cartId=${cartId}`)
+      }
+      req.session.chadInfo=null
+
       console.log("its user", existingAddress);
       existingUser.address.push({
         saveas: saveas,
@@ -68,7 +131,6 @@ const checkoutreload = async (req, res) => {
     }
 
     const categories = await catModel.find();
-    const cartId = req.body.cartId;
     const addresslist = await userModel.findOne({ _id: userId });
     if (!addresslist) {
       console.log("user not foound");
@@ -155,6 +217,8 @@ const order = new orderModel({
         { $inc: { stock: -item.quantity } }
       );
     }
+    req.session.checkout=false
+
     res.render("users/order_confirmation", { order, categories });
   } catch (error) {
     console.log(error);
@@ -269,7 +333,7 @@ const checkoutpage = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 

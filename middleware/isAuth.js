@@ -15,17 +15,25 @@ const loged=async(req,res,next)=>{
         res.send(error)
     }
 }
+const iflogged=async(req,res,next)=>{
+    if(req.session.isAuth){
+      res.redirect('/')
+    }else{
+      next()
+    }
+  }
 
-
-const logedtohome=(req,res,next)=>{
+const logedtohome=async(req,res,next)=>{
     try {
-        if(req.session.isAuth)
-    {
-        next()
-    }
-    else{
-        res.redirect("/");
-    }
+            const user= await userModel.findOne({_id:req.session.userId})
+            if(req.session.isAuth &&user && user.status==false){
+              next()
+            }
+              else{
+                res.redirect('/profile')
+              }
+            
+    
     } catch (error) {
         console.log(error);
         res.send(error)
@@ -59,6 +67,19 @@ const signforgot=(req,res,next)=>{
     }
 }
 
+const checkSessionVariable = (variableName,redirectPath) => {
+    return (req, res, next) => {
+      
+      if (req.session[variableName]) {
+
+        next();
+      } else {
+      
+        res.redirect(redirectPath);
+      }
+    };
+  };
+
 
 
 
@@ -69,5 +90,7 @@ module.exports={
     logedtohome,
     forgot,
     signforgot,
+    checkSessionVariable,
+    iflogged
     
 }

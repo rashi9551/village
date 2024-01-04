@@ -291,7 +291,6 @@ const addtofavourite = async (req, res) => {
 
     const userId = req.session.userId;
     const price = product.price;
-    const quantity = 1;
 
     let fav;
     if (userId) {
@@ -330,7 +329,7 @@ const addtofavourite = async (req, res) => {
     res.redirect("/favouritespage");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 const favouritespage = async (req, res) => {
@@ -363,7 +362,7 @@ const favouritespage = async (req, res) => {
     res.render("users/favourites.ejs", { fav, categories });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 
@@ -381,8 +380,8 @@ const deletefav = async (req, res) => {
     await updatefav.save();
     res.redirect("/favouritespage");
   } catch (error) {
-    console.error(err);
-    res.status(500).send("Error occurred");
+    console.log(error);
+    res.render("users/serverError")
   }
 };
 const addtocartviafav = async (req, res) => {
@@ -438,7 +437,7 @@ const addtocartviafav = async (req, res) => {
     res.redirect("/cartpage");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 
