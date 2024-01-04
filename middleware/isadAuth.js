@@ -13,6 +13,15 @@ const adisAuth=(req,res,next)=>{
     }
 }
 
+const logoutAdmin = (req, res, next) => {
+    if(!req.session.admin){
+        next()
+    } else {
+        res.redirect('/admin/adminpanel')
+    }
+}
+
 module.exports={
-    adisAuth
+    adisAuth,
+    logoutAdmin
 }

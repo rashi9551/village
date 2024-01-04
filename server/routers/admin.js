@@ -20,7 +20,7 @@ app.use(express.static('public/admin_assets'))
 admminrouter.use(express.urlencoded({extended:true}))
 
 
-admminrouter.get("/",admincontroller.login)
+admminrouter.get("/",sessions.logoutAdmin,admincontroller.login)
 admminrouter.post("/adminlogin",admincontroller.adminlogin)
 admminrouter.get("/adminpannel",sessions.adisAuth,admincontroller.adminpannel)
 admminrouter.get("/userslist",sessions.adisAuth,admincontroller.userslist)

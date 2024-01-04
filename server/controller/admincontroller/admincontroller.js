@@ -8,6 +8,7 @@ const fs=require('fs')
 const os=require('os')
 const path=require('path')
 const puppeteer=require('puppeteer')
+const {isFutureDate}=require('../../../utils/validators/admin_validator')
 
 
 
@@ -150,7 +151,6 @@ const filter = async (req, res) => {
 const adlogout = async (req, res) => {
   try {
       req.session.isadAuth = false;
-      req.session.destroy();
       res.redirect('/admin')
   
   } catch (error) {
@@ -237,6 +237,17 @@ const downloadsales = async (req, res) => {
   try {
       const { startDate, endDate } = req.body;
 
+      let sdate=isFutureDate(startDate)
+      let edate=isFutureDate(endDate)
+
+      if(sdate){
+        return res.redirect('/admin/adminpannel')
+      }
+      if(edate){
+        return res.redirect('/admin/adminpannel')
+
+      }
+
       const salesData = await orderModel.aggregate([
           {
               $match: {
@@ -254,6 +265,7 @@ const downloadsales = async (req, res) => {
               },
           },
       ]);
+      console.log("ithu sales",salesData);
 
       const products = await orderModel.aggregate([
           {
@@ -297,68 +309,59 @@ const downloadsales = async (req, res) => {
       ]);
 
       const htmlContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Sales Report</title>
-          <style>
-              body {
-                  margin-left: 20px;
-              }
-          </style>
-      </head>
-      <body>
-          <h2 align="center"> Sales Report</h2>
-          Start Date:${startDate}<br>
-          End Date:${endDate}<br> 
-          <center>
-              <table style="border-collapse: collapse;">
-                  <thead>
-                      <tr>
-                          <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-                          <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
-                          <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      ${products
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sales Report</title>
+        <style>
+            body {
+                margin-left: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2 align="center"> Sales Report</h2>
+        Start Date:${startDate}<br>
+        End Date:${endDate}<br> 
+        <center>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+                        <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                        <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${products
                         .map(
-                          (item, index) => `
-                          <tr>
-                              <td style="border: 1px solid #000; padding: 8px;">${
-                                index + 1
-                              }</td>
-                              <td style="border: 1px solid #000; padding: 8px;">${
-                                item.productName
-                              }</td>
-                              <td style="border: 1px solid #000; padding: 8px;">${
-                                item.totalSold
-                              }</td>
-                          </tr>`
+                            (item, index) => `
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 8px;">${index + 1}</td>
+                                <td style="border: 1px solid #000; padding: 8px;">${item.productName}</td>
+                                <td style="border: 1px solid #000; padding: 8px;">${item.totalSold}</td>
+                            </tr>`
                         )
                         .join("")}
-                          <tr>
-                          <td style="border: 1px solid #000; padding: 8px;"></td>
-                          <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
-                          <td style="border: 1px solid #000; padding: 8px;">${
-                            salesData[0].totalOrders
-                          }</td>
-                      </tr>
-                      <tr>
-                          <td style="border: 1px solid #000; padding: 8px;"></td>
-                          <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
-                          <td style="border: 1px solid #000; padding: 8px;">${
-                            salesData[0].totalAmount
-                          }</td>
-                      </tr>
-                  </tbody>
-              </table>
-          </center>
-      </body>
-      </html>
-  `;
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px;"></td>
+                        <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalOrders || 0}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px;"></td>
+                        <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalAmount || 0}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+    </body>
+    </html>
+`;
+
 
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
