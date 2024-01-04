@@ -23,7 +23,7 @@ const product = async (req, res) => {
     console.log(error);
     res.render("users/serverError");
   }
-};
+}
 
 // new product adding product page 
 const newproduct = async (req, res) => {
