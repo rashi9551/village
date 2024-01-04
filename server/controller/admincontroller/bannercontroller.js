@@ -4,11 +4,12 @@ const productModel=require('../../model/product_model')
 const coupons=require('../../model/coupon_model')
 const couponModel = require('../../model/coupon_model')
 const { default: mongoose } = require('mongoose')
+const flash=require('express-flash')
+const {alphanumValid}=require('../../../utils/validators/admin_validator')
 
 const bannerList=async(req,res)=>{
     try {
         const banners=await bannerModel.find({})
-        console.log(banners);
         res.render("admin/bannerList",{banners:banners})
         
     } catch (error) {
@@ -21,17 +22,17 @@ const bannerList=async(req,res)=>{
 
 const addbanner=async(req,res)=>{
     try {
-        const[categories,products,coupons]=await Promise.all([
-            catModel.find(),
-            productModel.find(),
-            couponModel.find()
-        ])
-
-        res.render("admin/newBanner",{categories,products,coupons})
-        
-    } catch (error) {
+        const categories=await catModel.find();
+        const products=await productModel.find();
+        const coupons=await couponModel.find();
+        res.render('admin/newBanner',{categories,products,coupons,bannerInfo:req.session.bannerInfo,expressFlash:{
+            titleError:req.flash("titleError"),
+            subtitleError:req.flash("subtitleError")
+        }});
+        req.session.bannerInfo=null
+    }  catch (err) {
         console.log(err);
-        res.render("users/serverError");
+        res.render("users/serverError")
     }
 }
 
@@ -39,7 +40,21 @@ const addBannerPost=async(req,res)=>{
     try {
         const {bannerLabel,bannerTitle,bannerimage,bannerSubtitle,bannerColor}=req.body
 
+        const subtitleValid = alphanumValid(bannerSubtitle)
+
+        const titleValid = alphanumValid(bannerTitle)
+
+        if(!titleValid){
+            req.flash("titleError","Invalid Entry !")
+            return res.redirect("/admin/newbanner")
+        }
+        if(!subtitleValid){
+            req.flash("subtitleError","Invalid Entry !")
+            return res.redirect("/admin/newbanner")
+        }
+        req.session.bannerInfo=null;
         const isVlaidObjectId=mongoose.Types.ObjectId.isValid;
+
         let bannerLink
         if(bannerLabel=='category'){
             bannerLink=req.body.category
@@ -64,8 +79,10 @@ const addBannerPost=async(req,res)=>{
 
             },
             color:bannerColor,
-            bannerLink:bannerLink
+            bannerlink:bannerLink
         })
+        console.log("ithu banner link",bannerLink)
+
         await newBanner.save()
         const banners=await bannerModel.find()
         res.render("admin/bannerList",{banners:banners})

@@ -1,45 +1,51 @@
-const mongoose=require("mongoose")
+const mongoose = require('mongoose')
 
-const bannerSchema=new mongoose.Schema({
+
+
+
+const bannerSchema = new mongoose.Schema({
+
     title:{
-        type:String,
-        require:true 
+        type: String,
+        required: true
     },
+
     subtitle:{
-        type:String,
-        require:true
+        type: String,
+        required: true
     },
 
     image:{
-        public_id:{
-            type:String,
-            require:true
+        public_id: {
+            type: String,
+            required: true
         },
-        url:{
-            type:String,
-            require:true
+        url: {
+            type: String,
+            required: true
         }
     },
-    
+
     label:{
-        type:String,
-        require:true
+        type: String,
+        required: true
     },
-    bannerLink:{
+    bannerlink:{
         type:String,
-        require:true
+        required:true
     },
+
     active:{
-        type:Boolean,
-        default:true
+        type: Boolean,
+        default: true
     },
     color:{
         type:String,
-        require:true
-    },
-
-
+        required:true
+    }
 
 })
-const bannerModel=new mongoose.model('banners',bannerSchema)
+
+const bannerModel=new mongoose.model("banners",bannerSchema)
+
 module.exports=bannerModel
