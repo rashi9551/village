@@ -313,7 +313,6 @@ const orderReturn = async (req, res) => {
         $set: { wallet: newWallet },
         $push: {
           walletTransactions: {
-            reason: "Order returned",
             date: new Date(),
             type: "Credited",
             amount: refund,
@@ -321,11 +320,8 @@ const orderReturn = async (req, res) => {
         },
       }
     );
-    let date = moment();
 
     const result = await orderModel.findOne({ _id: id });
-    result.updatedAt = date.toLocaleString();
-    await result.save();
 
     const items = result.items.map((item) => ({
       productId: item.productId,

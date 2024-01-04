@@ -36,7 +36,7 @@ usrouter.get("/otp",signforgot, usercontroller.otp);
 
 usrouter.post("/verifyotp",signforgot, usercontroller.verifyotp);
 
-usrouter.get("/resendotp",signforgot,usercontroller.resendotp);
+usrouter.post("/resendotp",signforgot,usercontroller.resendotp);
 
 usrouter.post("/login", usercontroller.login);
 

@@ -97,8 +97,8 @@
             <label for="otp">Enter OTP:</label>
             <input type="text" id="otp" name="otp" required>
             <button type="submit">Verify OTP</button>
-            <% if(locals.otperror){%>
-                <div class="alter text-danger text-start"><%=otperror%></div>
+            <% if(expressFlash.otperror){%>
+                <div class="alter text-danger text-start"><%=expressFlash.otperror%></div>
     
             <%}%>
         </form>

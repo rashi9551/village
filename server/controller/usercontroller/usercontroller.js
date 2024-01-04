@@ -20,6 +20,7 @@ const catModel = require("../../model/category_model");
 const productModel = require("../../model/product_model");
 const { product } = require("../admincontroller/productcontroller");
 const couponModel = require("../../model/coupon_model");
+const flash=require('express-flash')
 
 // otp generating function
 const generateotp = () => {
@@ -74,7 +75,7 @@ const index = async (req, res) => {
     res.render("users/index", { categories, banners });
   } catch (error) {
     console.error("Error fetching data:", error);
-    res.status(500).send("Internal Server Error");
+    res.render('users/serverError')
   }
 };
 
@@ -100,7 +101,7 @@ const bannerURL = async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.render('users/serverError')
   }
 };
 // shoping page
@@ -128,7 +129,7 @@ const shop = async (req, res) => {
     console.log("ipooooo", theCategory);
   } catch (error) {
     console.log(error);
-    res.status(500).send("error occured");
+    res.render('users/serverError')
   }
 };
 
@@ -144,16 +145,24 @@ const profile = async (req, res) => {
     console.log(req.session.user);
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render('users/serverError');
   }
 };
 
 // user signup page
 const signup = async (req, res) => {
   try {
-    await res.render("users/signup");
+    await res.render("users/signup",{expressFlash:{
+      emailerror:req.flash('emailerror'),
+      nameerror:req.flash('nameerror'),
+      phoneerror:req.flash('phoneerror'),
+      passworderror:req.flash('passworderror'),
+      cpassworderror:req.flash('cpassworderror')
+    }});
   } catch (error) {
     console.log(error);
+    res.render('users/serverError');
+
   }
 };
 
@@ -178,21 +187,23 @@ const signotp = async (req, res) => {
 
     const emailExist = await userModel.findOne({ email: email });
     if (emailExist) {
-      res.render("users/signup", { emailerror: "E-mail already exits" });
+      req.flash('emailerror',"email alredy exist")
+      res.redirect('/signup')
     } else if (!isusernameValid) {
-      res.render("users/signup", { nameerror: "Enter a valid Name" });
+      req.flash('nameerror',"enter valid name")
+      res.redirect('/signup')
     } else if (!isEmailValid) {
-      res.render("users/signup", { emailerror: "Enter a valid E-mail" });
+      req.flash('emailerror',"enter valid email")
+      res.redirect('/signup')
     } else if (!isPhoneValid) {
-      res.render("users/signup", { phoneerror: "Enter a valid Phone Number" });
+      req.flash('phoneerror',"enter valid ph:no")
+      res.redirect('/signup')
     } else if (!ispasswordValid) {
-      res.render("users/signup", {
-        passworderror: "Password should contain one(A,a,2)",
-      });
+      req.flash('passworderror',"enter valid password(A@0)")
+      res.redirect('/signup')
     } else if (!iscpasswordValid) {
-      res.render("users/signup", {
-        cpassworderror: "Password and Confirm password should be match",
-      });
+      req.flash('cpassworderror',"password not match")
+      res.redirect('/signup')
     } else {
       const hashedpassword = await bcrypt.hash(password, 10);
       const user = new userModel({
@@ -229,16 +240,21 @@ const signotp = async (req, res) => {
     }
   } catch (err) {
     console.error("Error:", err);
-    res.send("error");
+    res.render('users/serverError');
   }
 };
 
 // otp page rendering
 const otp = async (req, res) => {
   try {
-    res.render("users/otp");
-  } catch {
-    res.status(200).send("error occured");
+    const otp = await otpModel.findOne({ email: req.session.user.email });
+    res.render("users/otp",{expressFlash:{
+      otperror:req.flash('otperror')
+    }, otp: otp,
+  });
+  } catch(error) {
+    console.log(error);
+    res.render('users/serverError')
   }
 };
 
@@ -264,6 +280,8 @@ const verifyotp = async (req, res) => {
           const userdata = await userModel.findOne({ email: email });
           req.session.userId = userdata._id;
           req.session.isAuth = true;
+          req.session.signup=false
+          
           const referral = req.session.referralCode;
           console.log("referal", referral);
           const winner = await WalletModel.findOne({ userId: referral });
@@ -298,37 +316,41 @@ const verifyotp = async (req, res) => {
           res.redirect("/");
         } else if (req.session.forgot) {
           res.redirect("/newpassword");
+          
         }
       } catch (error) {
         console.error(error);
-        res.status(500).send("Error occurred while saving user data");
+        res.render('users/serverError')
       }
     } else {
-      res.render("users/otp", { otperror: "Worng password/Time expired" });
+      req.flash('otperror','wrong otp/time expired')
+      return res.redirect('/otp')
     }
   } catch (error) {
     console.log(err);
-    res.status(500).send("error occured");
+    res.render('users/serverError')
   }
 };
 const resendotp = async (req, res) => {
   try {
-    console.log("resend otp is working");
     const email = req.session.user.email;
     const otp = generateotp();
     console.log(otp);
 
     const currentTimestamp = Date.now();
-    const expiryTimestamp = currentTimestamp + 30 * 1000;
+    const expiryTimestamp = currentTimestamp + 60 * 1000;
     await otpModel.updateOne(
       { email: email },
       { otp: otp, expiry: new Date(expiryTimestamp) }
     );
+
     await sendmail(email, otp);
   } catch (err) {
     console.log(err);
+    res.render("users/serverError");
   }
 };
+
 const login = async (req, res) => {
   try {
     const username = req.body.username;
@@ -408,6 +430,7 @@ const forgotverify = async (req, res) => {
 };
 const newpassword = async (req, res) => {
   try {
+    req.session.forgot=false;
     res.render("users/newpassword");
   } catch {
     res.status(400).send("error occured");

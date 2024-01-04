@@ -13,10 +13,10 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-        .alter{
+        }.alter{
             color: red;
         }
+        
 
         .container {
             background-color: transparent;
@@ -72,24 +72,21 @@
         <form action="/signotp" method="post">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
-            <% if(locals.nameerror){%>
-                <div class="alter text-danger text-start"><%= nameerror%></div>
-
-            <%}%>
+            <% if(expressFlash.nameerror){%>
+                <div class="alter text-danger text-start"><%= expressFlash.nameerror%></div>
+              <%}%>
             
             <label for="mobile">Mobile Number:</label>
             <input type="tel" id="mobile" name="phone" required>
             
-            <% if(locals.phoneerror){%>
-                <div class="alter text-danger text-start"><%= phoneerror%></div>
-
-            <%}%>
+            <% if(expressFlash.phoneerror){%>
+                <div class="alter text-danger text-start"><%= expressFlash.phoneerror%></div>
+              <%}%>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
-            <% if(locals.emailerror){%>
-                <div class="alter text-danger text-start"><%= emailerror%></div>
-
-            <%}%>
+            <% if(expressFlash.emailerror){%>
+                <div class="alter text-danger text-start"><%= expressFlash.emailerror%></div>
+              <%}%>
             
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
@@ -105,16 +102,14 @@
            
             <input type="submit" value="Signup">
         
-
+            <% if(expressFlash.passworderror){%>
+                <div class="alter text-danger text-start"><%= expressFlash.passworderror%></div>
+              <%}%>
+              <% if(expressFlash.cpassworderror){%>
+                <div class="alter text-danger text-start"><%= expressFlash.cpassworderror%></div>
+              <%}%>
         </form>
-        <% if(locals.passworderror){%>
-            <div class="alter text-danger text-start"><%= passworderror%></div>
-
-        <%}%>
-        <% if(locals.cpassworderror){%>
-            <div class="alter  text-start"><%= cpassworderror%></div>
-
-        <%}%>
+        
        
         
     </div>

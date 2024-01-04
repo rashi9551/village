@@ -9,6 +9,7 @@ const os=require('os')
 const path=require('path')
 const puppeteer=require('puppeteer')
 const {isFutureDate}=require('../../../utils/validators/admin_validator')
+const flash=require("express-flash")
 
 
 
@@ -52,7 +53,9 @@ const adminlogin = async (req, res) => {
 // admin pannel page 
 const adminpannel = async (req, res) => {
   try {
-      res.render("admin/adminpannel");
+      res.render("admin/adminpannel",{expressFlash:{
+        derror:req.flash('derror')
+      }});
     
   } catch (error) {
     console.log(error);
@@ -241,9 +244,11 @@ const downloadsales = async (req, res) => {
       let edate=isFutureDate(endDate)
 
       if(sdate){
+        req.flash('derror','invalid date')
         return res.redirect('/admin/adminpannel')
       }
       if(edate){
+        req.flash('derror','invalid date')
         return res.redirect('/admin/adminpannel')
 
       }
