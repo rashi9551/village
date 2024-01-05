@@ -33,7 +33,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
-
 app.use(flash());
 app.use(express.static(__dirname +'/public'))
 app.use(express.static(__dirname +'/public/userAssets'))

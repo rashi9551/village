@@ -78,62 +78,90 @@ const addproduct = async (req, res) => {
     req.session.productInfo=req.body
 
     if(!productNameValid){
+      console.log("1");
         req.flash("productNameError","Enter Valid Data")
         return res.redirect('/admin/newproduct')
     }
     else if(!productTypeValid){
+      console.log("2");
       req.flash("productTypeError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!stockValid){
+      console.log("1jhg");
+
       req.flash("stockError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!priceValid){
+      console.log("1gh");
+
       req.flash("priceError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!descriptionValid){
+      console.log("1sa");
+
       req.flash("descriptionError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!mrpValid){
+      console.log("1gdgfd");
+
       req.flash("mrpError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!parentCategoryValid){
+      console.log("1grfzdssdzfd");
+
       req.flash("parentCategoryError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!discountValid){
+      console.log("1gfxdzsa");
+
       req.flash("discountError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!heightValid){
+      console.log("1lppoi");
+
       req.flash("heightError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!weightValid){
+      console.log("opjhfg1");
+
       req.flash("weightError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!widthValid){
+      console.log("dsasa1");
+
       req.flash("widthError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!sidelengthValid){
+      console.log("jfytg1");
+
       req.flash("sidelengthError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!madeofValid){
+      console.log("1ft");
+
       req.flash("madeofError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!colorValid){
+      console.log("fxfgx1");
+
       req.flash("colorError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }
     else if(!manufacturerValid){
+      console.log("1jweegewg");
+
       req.flash("manufacturerError","Enter Valid Data")
       return res.redirect("/admin/newproduct")
     }

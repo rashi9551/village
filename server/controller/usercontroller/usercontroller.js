@@ -64,15 +64,16 @@ const sendmail = async (email, otp) => {
 // home page rendering
 const index = async (req, res) => {
   try {
-    const [categories, banners] = await Promise.all([
+    const [categories, banners,products] = await Promise.all([
       catModel.find(),
       bannerModel.find(),
-    ]);
+      productModel.find()
+,    ]);
 
     console.log(categories);
     console.log(banners);
 
-    res.render("users/index", { categories, banners });
+    res.render("users/index", { categories, banners ,products});
   } catch (error) {
     console.error("Error fetching data:", error);
     res.render('users/serverError')
@@ -83,13 +84,13 @@ const bannerURL = async (req, res) => {
   try {
     const bannerId = req.query.id;
     const banner = await bannerModel.findOne({ _id: bannerId });
-    console.log("ithhahnu mwoney", banner.bannerLink);
+    console.log("ithhahnu mwoney", banner.bannerlink);
     if (banner.label == "category") {
-      const categoryId = new mongoose.Types.ObjectId(banner.bannerLink);
+      const categoryId = new mongoose.Types.ObjectId(banner.bannerlink);
       const category = await catModel.findOne({ _id: categoryId });
       res.redirect(`/shop/?category=${categoryId}`);
     } else if (banner.label == "product") {
-      const productId = new mongoose.Types.ObjectId(banner.bannerLink);
+      const productId = new mongoose.Types.ObjectId(banner.bannerlink);
       const product = await productModel.findOne({ _id: productId });
       res.redirect(`/singleproduct/${productId}`);
     } else if (banner.label == "coupon") {
