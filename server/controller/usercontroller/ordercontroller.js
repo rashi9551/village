@@ -92,6 +92,7 @@ const ordercancelling = async (req, res) => {
               reason: "oreder cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
+              reason:"order cancelled",
               amount: refund, // Replace with the actual amount you want to add
             },
           },
@@ -154,6 +155,7 @@ const itemcancelling = async (req, res) => {
               reason: "item Cancelled",
               date: new Date(),
               type: "Credited", // or 'debit' depending on your use case
+              reason:"item cancelled",
               amount: refund, // Replace with the actual amount you want to add
             },
           },
@@ -233,6 +235,7 @@ const itemreturning = async (req, res) => {
             reason: "ordered item returned",
             date: new Date(),
             type: "Credited",
+            reason:"item returned",
             amount: refund,
           },
         },
@@ -315,6 +318,7 @@ const orderReturn = async (req, res) => {
           walletTransactions: {
             date: new Date(),
             type: "Credited",
+            reason:"order returned",
             amount: refund,
           },
         },
