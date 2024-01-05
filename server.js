@@ -35,8 +35,8 @@ app.use(session({
 }));
 app.use(flash());
 app.use(express.static(__dirname +'/public'))
-app.use(express.static(__dirname +'/public/adminAssets'))
 app.use(express.static(__dirname +'/public/userAssets'))
+app.use(express.static(__dirname +'/public/adminAssets'))
 app.set("view engine","ejs")
 app.set('views',path.join(__dirname,'views'))
 
