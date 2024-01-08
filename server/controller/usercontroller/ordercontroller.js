@@ -1,9 +1,9 @@
 const catModel = require("../../model/category_model");
-const puppeteer = require("puppeteer");
 const walletModel = require("../../model/wallet_Model");
 const moment = require("moment");
 const orderModel = require("../../model/order_model");
 const productModel = require("../../model/product_model");
+const easyinvoice = require('easyinvoice')
 
 const orderhistory = async (req, res) => {
   try {
@@ -347,131 +347,71 @@ const downloadInvoice = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     console.log(orderId);
-    const order = await orderModel.findOne({ orderId: orderId });
-
-    // Replace the following line with logic to fetch order details and generate dynamic HTML
-    const orderHistoryContent = ` <!DOCTYPE html>
-      <html lang="en">
-      
-      <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-          <meta name="author" content="Your Company">
-          <title>Order Invoice</title>
-          <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-      </head>
-      
-      <body>
-      
-          <div class="container mt-5">
-              <div class="row justify-content-center">
-                  <div class="col-md-8">
-                      <div class="card">
-                          <div class="card-header bg-info text-white">
-                              <h3 class="mb-0">Order Invoice</h3>
-                          </div>
-                          <div class="card-body">
-                              <div class="row mb-4">
-                                  <div class="col-sm-6">
-                                      <h5>Order ID: ${order.orderId}</h5>
-                                      <h5>Order Status: ${order.status}</h5>
-                                  </div>
-                                  <div class="col-sm-6 text-sm-right">
-                                      <h5>Order Date: ${order.createdAt.toLocaleString(
-                                        "en-US",
-                                        {
-                                          month: "short",
-                                          day: "numeric",
-                                          year: "numeric",
-                                        }
-                                      )}</h5>
-                                      <h5>Payment Method:${
-                                        order.paymentMethod
-                                      }</h5>
-                                  </div>
-                              </div>
-      
-                              <div class="mb-4">
-                                  <h5>Shipping Address</h5>
-                                  <p>${order.shippingAddress.fullname}<br>
-                                      ${order.shippingAddress.adname}, 
-                                      ${order.shippingAddress.street}<br>
-                                      ${order.shippingAddress.city}, 
-                                      ${order.shippingAddress.pincode}<br>
-                                      ${order.shippingAddress.phonenumber}
-                                  </p>
-                              </div>
-      
-                              <div class="mb-4">
-                                  <h5>Order Items</h5>
-                                  <table class="table">
-                                      <thead>
-                                          <tr>
-                                              <th>Item Name</th>
-                                              <th>Price</th>
-                                              <th>Quantity</th>
-                                              <th>Total</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>
-                                      ${order.items
-                                        .map(
-                                          (item) => `
-                                      <tr>
-                                          <td>${item.productName}</td>
-                                          <td>${item.singleprice}</td>
-                                          <td>${item.quantity}</td>
-                                          <td>${item.price}</td>
-                                      </tr>`
-                                        )
-                                        .join("")}
-                                          <tr>
-                                              <td colspan="3">Total After Discount</td>
-                                              <td>${order.totalPrice}</td>
-                                          </tr>
-                                      </tbody>
-                                  </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      
-          <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-      
-      </body>
-      
-      </html>
-      
-      `;
-
-    const browser = await puppeteer.launch({ headless: "new" });
-    const page = await browser.newPage();
-
-    await page.setContent(orderHistoryContent, {
-      waitUntil: "domcontentloaded",
+    const order = await orderModel.findOne({ orderId: orderId }).populate({
+      path: "items.productId",
+      select: "name",
     });
-
-    const pdfBuffer = await page.pdf({ format: "A4" });
-
-    await browser.close();
+    console.log("jfthgcxfdshgdfrtc",order);
+    const pdfBuffer = await generateInvoice(order);
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=order_invoice_${req.params.orderId}.pdf`
+      ` attachment; filename=invoice-${order.orderId}.pdf`
     );
-
     res.send(pdfBuffer);
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).send("Internal Server Error");
+    
+
+  }
+  
+   catch (error) {
+    console.log(error);
+    res.send(error);
   }
 };
 
+const generateInvoice=async (order)=>{
+  try{
+    console.log("kayari");
+    let totalAmount = order.totalPrice;
+    const data = {
+      documentTitle: "Invoice",
+      currency: "INR",
+      marginTop: 25,
+      marginRight: 25,
+      marginLeft: 25,
+      marginBottom: 25,
+      sender: {
+        company: "Furnify",
+        address: "123 Main Street, Banglore, India",
+        zip: "651323",
+        city: "Banglore",
+        country: "INDIA",
+        phone: "9876543210",
+        email: "thefurnify@gmail.com",
+        website: "www.thefurnify.shop",
+      },
+      invoiceNumber: "INV-${order.orderId}",
+      invoiceDate: new Date().toJSON(),
+      products: order.items.map((item) => ({
+        quantity: item.quantity,
+        description: item.productName,
+        price: item.price,
+      })),
+      total: parseInt(totalAmount),
+      tax: 0,
+      bottomNotice: "Thank you for shopping at UrbanSole!",
+    };
+  const result = await easyinvoice.createInvoice(data);
+  const pdfBuffer = Buffer.from(result.pdf, "base64");
+
+  return pdfBuffer;
+}catch(error){
+    console.log(error);
+}
+
+
+}
 module.exports = {
   itemcancelling,
   itemreturning,
