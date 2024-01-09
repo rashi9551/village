@@ -81,7 +81,7 @@ const addtocart = async (req, res) => {
   }
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 };
 

@@ -24,6 +24,7 @@ const flash=require('express-flash')
 
 // otp generating function
 const generateotp = () => {
+  try{
   const otp = otpgenerator.generate(6, {
     upperCaseAlphabets: false,
     lowerCaseAlphabets: false,
@@ -32,6 +33,10 @@ const generateotp = () => {
   });
   console.log("Generated OTP:", otp);
   return otp;
+}catch(error){
+  console.log(error);
+  res.render("users/serverError")
+}
 };
 
 // otp email sending function
@@ -58,22 +63,51 @@ const sendmail = async (email, otp) => {
     console.log("E-mail sent successfully");
   } catch (err) {
     console.log("Error in sending mail:", err);
+    res.render("users/serverError")
   }
 };
 
 // home page rendering
 const index = async (req, res) => {
   try {
-    const [categories, banners,products] = await Promise.all([
+    
+    const [categories, banners] = await Promise.all([
       catModel.find(),
       bannerModel.find(),
-      productModel.find()
-,    ]);
+          ]);
+      
+      console.log(categories);
+      console.log(banners);
 
-    console.log(categories);
-    console.log(banners);
+      const limit = 4;
+      let page = parseInt(req.body.currentPage) || 1;
+      const action = req.body.action;
+      const prodCount = await productModel.countDocuments();
+      const totalPages = Math.ceil(prodCount/limit);
+      if(action){
+        page+=action
+      }
+      const skip = (page-1)*limit;
+      const from = skip + 1;
+      const to = skip + limit;
+      const products=await productModel.find().limit(limit).skip(skip)
 
-    res.render("users/index", { categories, banners ,products});
+      if(req.body.currentPage)
+      {
+        return res.json({
+          currentPage:page,
+          totalPages,
+          products,
+          from,
+          to,
+          success:true,
+          totalProduccts:prodCount
+        })
+      }
+
+
+
+    res.render("users/index", { categories, banners ,products, currentPage:page, totalPages});
   } catch (error) {
     console.error("Error fetching data:", error);
     res.render('users/serverError')
@@ -88,7 +122,7 @@ const bannerURL = async (req, res) => {
     if (banner.label == "category") {
       const categoryId = new mongoose.Types.ObjectId(banner.bannerlink);
       const category = await catModel.findOne({ _id: categoryId });
-      res.redirect(`/shop/?category=${categoryId}`);
+      res.redirect(`/shop?category=${categoryId}`);
     } else if (banner.label == "product") {
       const productId = new mongoose.Types.ObjectId(banner.bannerlink);
       const product = await productModel.findOne({ _id: productId });
@@ -346,8 +380,8 @@ const resendotp = async (req, res) => {
     );
 
     await sendmail(email, otp);
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     res.render("users/serverError");
   }
 };
@@ -359,7 +393,7 @@ const login = async (req, res) => {
 
     // Check if the user exists
     if (!user) {
-      throw new Error("User not found");
+      res.render("users/serverError")
     }
 
     const passwordmatch = await bcrypt.compare(
@@ -381,7 +415,7 @@ const login = async (req, res) => {
     // Authentication failed
   } catch (error) {
     res.render("users/signin", {
-      passworderror: "incorrect passwordor/username",
+    passworderror: "incorrect passwordor/username",
     });
   }
 };
@@ -434,7 +468,7 @@ const newpassword = async (req, res) => {
     req.session.forgot=false;
     res.render("users/newpassword");
   } catch {
-    res.status(400).send("error occured");
+    res.render("users/serverError")
   }
 };
 const resetpassword = async (req, res) => {
@@ -458,8 +492,9 @@ const resetpassword = async (req, res) => {
       req.session.forgot = false;
       res.redirect("/");
     }
-  } catch {
-    res.status(400).send("error occured");
+  } catch(error){
+    console.log(error);
+    res.render("users/serverError")
   }
 };
 
@@ -469,7 +504,7 @@ const logout = async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.log(error);
-    res.send("Error Occured");
+    res.render("users/serverError")
   }
 };
 

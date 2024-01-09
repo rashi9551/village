@@ -1,4 +1,5 @@
-const orderModel=require("../../model/order_model")
+const orderModel=require("../../model/order_model");
+const { orderReturn } = require("../usercontroller/ordercontroller");
 
 const orderPage=async(req,res)=>{
     try {
@@ -28,8 +29,19 @@ const updateorderstatus=async(req,res)=>{
 
     }
 }
+const orderDetails=async(req,res)=>{
+    try {
+        const orderId=req.params.id
+        const order=await orderModel.findById(orderId)
+        res.render('admin/orderDetails',{orders:order})
+    } catch (error) {
+        console.log(error);
+        res.render("users/serverError");
+    }
+}
 
 module.exports={
     orderPage,
-    updateorderstatus
+    updateorderstatus,
+    orderDetails
 }

@@ -250,7 +250,7 @@ const resizeImage=async(req,res)=>{
         console.log(imagePath)
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError");
   }
 
 }

@@ -18,7 +18,7 @@ const userdetails = async (req, res) => {
     res.render("users/userdetails", { categories, userData: userdata });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -30,7 +30,7 @@ const profileEdit = async (req, res) => {
     res.render("users/editprofile", { userData: userData, categories });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -47,7 +47,7 @@ const profileUpdate = async (req, res) => {
     res.redirect("/userdetails");
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -56,8 +56,9 @@ const newAddress = async (req, res) => {
     const categories = await catModel.find();
     res.render("users/newAddress", { categories });
   } catch (err) {
-    res.status(500).send("error occured");
     console.log(err);
+    res.render("users/serverError")
+
   }
 };
 
@@ -136,7 +137,7 @@ const updateAddress = async (req, res) => {
     res.redirect("/userdetails");
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -152,7 +153,7 @@ const editaddress = async (req, res) => {
     res.render("users/editaddress", { addressToEdit, categories });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -219,8 +220,8 @@ const editaddressupdate = async (req, res) => {
 
     res.redirect("/userdetails");
   } catch (err) {
-    res.status(500).send("Error occurred");
     console.log(err);
+    res.render("users/serverError")
   }
 };
 
@@ -236,7 +237,7 @@ const deleteAddress = async (req, res) => {
     res.redirect("/userdetails");
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -280,7 +281,7 @@ const changepassword = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 

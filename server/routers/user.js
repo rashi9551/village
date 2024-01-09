@@ -15,6 +15,8 @@ const {loged,signforgot,forgot,logedtohome,iflogged,checkSessionVariable}=sessio
 
 usrouter.get("/", usercontroller.index);
 
+usrouter.post('/pagination',usercontroller.index)
+
 usrouter.get("/shop", usercontroller.shop);
 
 usrouter.post("/searchProducts",productControl.searchProducts)

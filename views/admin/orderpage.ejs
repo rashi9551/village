@@ -51,8 +51,9 @@
                         <th>shippingAddress</th>
                         <th>Payment method</th>
                         <th>status</th>
+                        <th>Details</th>
                         <th>createdAt</th>
-                        <th>UpdatedAt</th>
+                        
                         
                     </tr>
                 </thead>
@@ -85,11 +86,17 @@
                                     
                                 </td>
                                 <td>
+                                  <a href="/admin/orderdetails/<%=order._id%>">
+                                    <button class="btn btn-primary btn-sm" id="blockORunblock">Details
+                                    </button>
+                                </a>
+                                </td>
+                                <td>
                                   <%= order.createdAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) %>
                                   </td>
-                                  <td>
+                                  <!-- <td>
                                     <%= order.updatedAt ? order.updatedAt.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) : 'N/A' %>
-                                  </td>
+                                  </td> -->
                             </tr>
                       
                        

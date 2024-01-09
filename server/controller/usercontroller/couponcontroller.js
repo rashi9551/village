@@ -20,7 +20,7 @@ const couponsAndRewards = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.render("users/serverError")
   }
 };
 
@@ -72,7 +72,7 @@ const applyCoupon = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 const recokeCoupon = async (req, res) => {
@@ -107,7 +107,7 @@ const recokeCoupon = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 

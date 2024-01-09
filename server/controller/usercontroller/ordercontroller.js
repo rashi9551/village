@@ -9,8 +9,11 @@ const orderhistory = async (req, res) => {
   try {
     const userId = req.session.userId;
     console.log(userId);
-    const categories = await catModel.find({});
-    const od = await orderModel.find({ userId: userId });
+    const [categories, od] = await Promise.all([
+      catModel.find(),
+      orderModel.find({ userId: userId})
+    ])
+  
     const allOrderItems = [];
     od.forEach((order) => {
       allOrderItems.push(...order.items);
@@ -53,6 +56,7 @@ const orderhistory = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
+    res.render("users/serverError")
   }
 };
 
@@ -382,14 +386,14 @@ const generateInvoice=async (order)=>{
       marginLeft: 25,
       marginBottom: 25,
       sender: {
-        company: "Furnify",
+        company: "Village",
         address: "123 Main Street, Banglore, India",
         zip: "651323",
         city: "Banglore",
         country: "INDIA",
-        phone: "9876543210",
-        email: "thefurnify@gmail.com",
-        website: "www.thefurnify.shop",
+        phone: "9544429615",
+        email: "villageVillage.com",
+        website: "www.villageVillage.online",
       },
       invoiceNumber: "INV-${order.orderId}",
       invoiceDate: new Date().toJSON(),
@@ -398,6 +402,7 @@ const generateInvoice=async (order)=>{
         description: item.productName,
         price: item.price,
       })),
+
       total: parseInt(totalAmount),
       tax: 0,
       bottomNotice: "Thank you for shopping at UrbanSole!",

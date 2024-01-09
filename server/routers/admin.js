@@ -57,6 +57,7 @@ admminrouter.post("/updateproduct/:id",sessions.adisAuth,productcontroller.updat
 
 admminrouter.get("/orderPage",sessions.adisAuth,ordercontroller.orderPage)
 admminrouter.post("/updateOrderStatus",sessions.adisAuth,ordercontroller.updateorderstatus)
+admminrouter.get('/orderdetails/:id',sessions.adisAuth,ordercontroller.orderDetails)
 
 admminrouter.get('/couponList',sessions.adisAuth,couponcontroller.couponList)
 admminrouter.get('/newcoupon',sessions.adisAuth,couponcontroller.addcouponpage)

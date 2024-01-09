@@ -134,17 +134,15 @@ if (existingUser) {
     const addresslist = await userModel.findOne({ _id: userId });
     if (!addresslist) {
       console.log("user not foound");
-      return res.status(404).send("user not found");
-    }
+      res.render("users/serverError")     }
     const addresses = addresslist.address;
     if (!cartId) {
       console.log("cart Id not found");
-      return res.status(404).send("cart not found");
-    }
+      res.render("users/serverError")     }
     const cart = await cartModel.findById(cartId).populate("item.productId");
     if (!cart) {
       console.log("cart not found");
-      return res.status(404).send("cart not found");
+      res.render("users/serverError")     
     }
 
     const cartItems = cart.item.map((cartItem) => ({
@@ -156,7 +154,7 @@ if (existingUser) {
     res.render("users/checkout", { addresses, cartItems, categories, cart });
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -168,8 +166,8 @@ const placeorder = async (req, res) => {
       address: { $elemMatch: { _id: addressId } },
     });
     if (!user) {
-      return res.status(404).send("user not found");
-    }
+      res.render("users/serverError")    
+     }
     const selectedAddress = user.address.find((address) =>
       address._id.equals(addressId)
     );
@@ -267,7 +265,7 @@ const wallettransaction = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 

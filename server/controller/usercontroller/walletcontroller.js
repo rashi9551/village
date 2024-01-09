@@ -23,12 +23,13 @@ const wallet = async (req, res) => {
     res.render("users/wallet", { categories, userWallet, usertransactions });
   } catch (err) {
     console.log(err);
-    res.status(500).send("Internal Server Error");
+    res.render("users/serverError")
   }
 };
 const instance = new Razorpay({ key_id: KEY_ID, key_secret: key_secret });
 
 const walletupi = async (req, res) => {
+  try{
   console.log("body:", req.body);
   var options = {
     amount: 500,
@@ -39,6 +40,11 @@ const walletupi = async (req, res) => {
     console.log("order1 :", order);
     res.send({ orderId: order.id });
   });
+}catch(error){
+  console.log(error);
+  res.render("users/serverError")
+
+}
 };
 
 const walletTopup = async (req, res) => {
@@ -60,7 +66,7 @@ const walletTopup = async (req, res) => {
     res.redirect("/wallet");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error occurred");
+    res.render("users/serverError")
   }
 };
 

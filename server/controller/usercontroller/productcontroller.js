@@ -68,9 +68,8 @@ const searchProducts = async (req, res) => {
     console.error(err);
 
     // Sending a more informative error response
-    res
-      .status(500)
-      .json({ error: "Internal Server Error", message: err.message });
+    res.render("users/serverError")
+
   }
 };
 
@@ -122,7 +121,7 @@ const filterProducts = async (req, res) => {
     console.log("ipooooo", theCategory);
   } catch (error) {
     console.log(error);
-    res.status(500).send("error occured");
+    res.render("users/serverError")
   }
 };
 
@@ -180,7 +179,7 @@ const sortProducts = async (req, res) => {
     console.log("ipoppop", theCategory);
   } catch (error) {
     console.log(error);
-    res.send(error);
+    res.render("users/serverError")
   }
 };
 
@@ -239,7 +238,7 @@ const singleproduct = async (req, res) => {
     });
   } catch (err) {
     console.log("Shopping Page Error:", err);
-    res.status(500).send("Internal Server Error");
+    res.render("users/serverError")
   }
 };
 

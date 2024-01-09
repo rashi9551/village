@@ -1,27 +1,30 @@
-const adisAuth=(req,res,next)=>{
-    try {
-        if(req.session.isadAuth)
-    {
-        next()
+const adisAuth = (req, res, next) => {
+  try {
+    if (req.session.isadAuth) {
+      next();
+    } else {
+      res.redirect("/admin");
     }
-    else{
-        res.redirect("/admin")
-    }
-    } catch (error) {
-        console.log(error);
-        res.send(error)
-    }
-}
+  } catch (error) {
+    console.log(error);
+    res.render("users/serverError");
+  }
+};
 
 const logoutAdmin = (req, res, next) => {
-    if(!req.session.admin){
-        next()
+  try {
+    if (!req.session.admin) {
+      next();
     } else {
-        res.redirect('/admin/adminpanel')
+      res.redirect("/admin/adminpanel");
     }
-}
+  } catch (error) {
+    console.log(error);
+    res.render("users/serverError");
+  }
+};
 
-module.exports={
-    adisAuth,
-    logoutAdmin
-}
+module.exports = {
+  adisAuth,
+  logoutAdmin,
+};

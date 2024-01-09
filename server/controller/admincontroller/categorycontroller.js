@@ -26,6 +26,8 @@ const category = async (req, res) => {
      
     } catch (error) {
       console.log(error);
+      res.render("users/serverError");
+
     }
   };
   

@@ -1,6 +1,6 @@
 <!-- /*
 * Bootstrap 5
-* Template Name: Furni
+* Template Name: Village
 * Template Author: Untree.co
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
@@ -21,6 +21,74 @@
   <meta name="description" content="" />
   <meta name="keywords" content="bootstrap, bootstrap4" />
   <style>
+body {
+      background-color: #f8f9fa;
+      color: #495057;
+    }
+
+    #container {
+      margin-top: 50px;
+    }
+
+    .circular-buttons {
+      text-align: center;
+    }
+
+    .circular-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 50px;
+		height: 50px;
+		background-color: #ffffff;
+		border-radius: 50%;
+		margin: 0 10px;
+		border: 2px solid #3b5d50;
+		color: #3b5d50;
+		font-size: 20px;
+		text-decoration: none;
+		transition: background-color 0.3s, color 0.3s;
+    }
+
+    .circular-btn:hover {
+      background-color: #3b5d50;
+      color: #ffffff;
+    }
+
+    .number-circle {
+      width: 100px;
+      height: 100px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      margin: 20px auto;
+      border: 2px solid #3b5d50;
+      color: #3b5d50;
+      font-size: 24px;
+      line-height: 100px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .number-circle:hover {
+      background-color: #3b5d50;
+      color: #ffffff;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .animated {
+      animation: bounce 1s infinite;
+    }
 
 
 
@@ -105,7 +173,7 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<link href="css/tiny-slider.css" rel="stylesheet">
 		<link href="css/style.css" rel="stylesheet">
-		<title>FURNiFY</title>
+		<title>Village</title>
 	</head>
 
 	<body>
@@ -136,7 +204,7 @@
 		<!-- End Product Section -->
 		<div class="untree_co-section product-section before-footer-section">
 		    <div class="container">
-				<div class="row" >
+				<div class="row" id="product-container" >
 					
 					<% products.forEach(product => { %>
 					  <div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
@@ -149,9 +217,19 @@
 							<a href="/addtocart/<%= product._id %>"><img src="images/cross.svg" class="img-fluid"></a>
 						  </span>
 						 
-						
 					  </div>
 					<% }); %>
+				  </div>
+				  <div id="container" >
+					<div class="circular-buttons">
+					<% if(currentPage > 1)	{ %>
+					  <a  class="circular-btn"  onclick="changePage('<%=currentPage%>',-1)"><i class="fas fa-angle-left"></i></a>
+					<% } %>
+					  <div class="number-circle animated"><%=currentPage%></div>
+					<% if(currentPage < totalPages) { %>
+					  <a  class="circular-btn" onclick="changePage('<%=currentPage%>',1)"><i class="fas fa-angle-right"></i></a>
+					<% } %>
+					</div>
 				  </div>
 				  
 		    </div>
@@ -240,6 +318,80 @@
 		<%-include('userpartials/footer')%>
 		
 		<!-- End Footer Section -->	
+
+		<!-- for pagination -->
+		<script>
+			async function changePage(currentPage,action){
+				try {
+					const response = await fetch('/pagination',{
+						method:'POST',
+						headers:{
+							'Content-type':'application/json'
+						},
+						body:JSON.stringify({
+							currentPage,
+							action
+						})
+					})
+
+					const data = await response.json();
+
+					if(data){
+						updateProductContainer(data.products);
+						updatePaginationContainer(data.currentPage,data.totalPages);
+					}
+				} catch (error) {
+					console.log("error while fetching pagination data",error)
+				}
+			}
+
+
+			function updateProductContainer(products) {
+				const productContainer = document.getElementById("product-container");
+				productContainer.innerHTML = ""; // Corrected this line
+				products.forEach(product => {
+					const newHTML = `
+						<div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
+							<a class="product-item" href="/singleproduct/${product._id}" data-types="${product.type}">
+								<img src="${product.images[0]}" class="img-fluid product-thumbnail" style="width: 100%; height: 40vh; object-fit: cover;">
+								<h3 class="product-title">${product.name}</h3>
+								<strong class="product-price">₹${product.price.toFixed(2)}</strong>
+							</a>
+							<span class="icon-cross">
+								<a href="/addtocart/${product._id}"><img src="images/cross.svg" class="img-fluid"></a>
+							</span>
+						</div>
+					`;
+					productContainer.innerHTML += newHTML;
+				});
+			}
+
+			function updatePaginationContainer(currentPage,totalPages){
+				let values=document.getElementById('container');
+				values.innerHTML=" ";
+				const leftArrow = currentPage > 1
+                ? `<a  class="circular-btn"  onclick="changePage('${currentPage}',-1)"><i class="fas fa-angle-left"></i></a>`
+                : '';
+
+				const rightArrow = currentPage < totalPages
+    ? `<a  class="circular-btn" onclick="changePage('${currentPage}',1)"><i class="fas fa-angle-right"></i></a>`
+    : '';
+
+            const paginationHTML = 
+			`
+                <div class="circular-buttons">
+                    ${leftArrow}
+                    <div class="number-circle animated">${currentPage}</div>
+                    ${rightArrow}
+                </div>
+			`;
+
+
+			values.innerHTML += paginationHTML
+				
+			}
+		</script>
+		<!--  pagination ends -->
 
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
