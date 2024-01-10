@@ -1,15 +1,29 @@
 const couponModel=require("../../model/coupon_model")
+const flash=require('express-flash')
+
+const {alphanumValid,onlyNumbers}=require('../../../utils/validators/admin_validator')
 
 const createCoupon=async(req,res)=>{
     try{
         const {couponCode,minimumPrice,discount,expiry,maxRedeem,couponType}=req.body
 
         const couponExists = await couponModel.findOne({ couponCode: couponCode });
+        const couponValid=alphanumValid(couponCode)
+        const minimumPriceVlaid=onlyNumbers(minimumPrice)
     
         if (couponExists) {
             console.log("Coupon exists");
             res.redirect('/admin/couponList');
-        } else {
+        }
+        else if(!couponValid){
+            req.flash('couponCodeError','Enter A Valid Coupon')
+            return res.redirect('/admin/newcoupon')
+        }
+        else if(!minimumPriceVlaid){
+            req.flash('minimumPriceError','Enter A Valid Price')
+            return res.redirect('/admin/newcoupon')
+        }
+         else {
             await couponModel.create({
                 couponCode: couponCode,
                 type:couponType,
@@ -44,7 +58,11 @@ const couponList=async(req,res)=>{
 
 const addcouponpage=async(req,res)=>{
     try{
-        res.render('admin/addCoupon')
+        res.render('admin/addCoupon',{expressFlash:{
+            couponCodeError:req.flash('couponCodeError'),
+            minimumPriceVlaidError:req.flash('minmumPriceError')
+
+        }})
     }
     catch(err){
         console.log(err)
@@ -84,11 +102,16 @@ const updateCoupon=async(req,res)=>{
         const {couponId,couponCode,minimumPrice,discount,expiry,maxRedeem,couponType}=req.body
 
         const couponExists = await couponModel.findOne({ couponCode: couponCode });
-    
+        const couponValid=alphanumValid(couponCode)
         if (couponExists) {
             console.log("Coupon exists");
             res.redirect('/admin/couponList');
-        } else {
+        } 
+        else if(!couponValid){
+            req.flash('couponCodeError','Enter A Valid Coupon')
+            return res.redirect('/admin/newcoupon')
+        }
+        else {
 
             const updatedCoupon = await couponModel.findByIdAndUpdate(
                 couponId,

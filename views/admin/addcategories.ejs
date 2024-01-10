@@ -45,16 +45,22 @@
                         <label for="categoryName" class="form-label">Category Name:</label>
                         <input type="text" class="form-control" id="categoryName" name="categoryName" required>
                     </div>
+                    <% if(expressFlash.catNameError){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.catNameError%></div>
+                  <%}%>
         
                     <div class="mb-3">
                         <label for="description" class="form-label">Description:</label>
                         <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                     </div>
-                    <% if(expressFlash.caterror){%>
-                      <div class="alter text-danger text-start"><%= expressFlash.caterror%></div>
+                    <% if(expressFlash.catDesError){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.catDesError%></div>
                   <%}%>
         
                     <button type="submit" class="btn btn-primary mt-5">Add Category</button>
+                    <% if(expressFlash.caterror){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.caterror%></div>
+                  <%}%>
                 </form>
             </div>
           

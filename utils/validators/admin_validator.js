@@ -31,9 +31,9 @@ const zerotonine = (str) => {
     }
 }
 
-const uppercaseAlphanumValid = (input) => {
+const AlphaOnly = (input) => {
     try {
-        const regex = /^[A-Z0-9]*$/;
+        const regex = /^[a-zA-Z]*$/;
         return regex.test(input);
         
     } catch (error) {
@@ -58,6 +58,6 @@ module.exports={
     alphanumValid,
     onlyNumbers,
     zerotonine,
-    uppercaseAlphanumValid,
+    AlphaOnly,
     isFutureDate
 }

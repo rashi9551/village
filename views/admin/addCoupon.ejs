@@ -45,6 +45,9 @@
                         <label for="couponCode" class="form-label">Coupon Code:</label>
                         <input type="text" class="form-control" id="couponCode" name="couponCode" required>
                     </div>
+                    <% if(expressFlash.couponCodeError){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.couponCodeError%></div>
+                    <%}%>
 
                     <div class="mb-3">
                       <label for="couponType" class="form-label">Coupon Type:</label>
@@ -59,6 +62,9 @@
                         <input type="number" class="form-control" id="minimumPrice" name="minimumPrice" required>
 
                     </div>
+                    <% if(expressFlash.minimumPriceError){%>
+                      <div class="alter text-danger text-start"><%= expressFlash.minimumPriceError%></div>
+                    <%}%>
 
                     <div class="mb-3">
                         <label for="discount" class="form-label">Discount:</label>

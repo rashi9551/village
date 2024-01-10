@@ -64,6 +64,9 @@ app.post('/your-upload-route', upload.array('files'), (req, res) => {
 
 app.use("/",router)
 app.use("/admin",adminrouter)
+app.get('*',(req,res)=>{
+  res.render('users/404')
+})
 
 // porting 
 app.listen(port,()=>{
