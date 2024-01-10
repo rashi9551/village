@@ -7,14 +7,18 @@
     <meta name="author" content="Untree.co">
     <meta name="description" content="" />
     <meta name="keywords" content="bootstrap, bootstrap4" />
+    <link rel="shortcut icon" href="images/MYLOGO.png">
+
 
     <!-- Bootstrap CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="/css/tiny-slider.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
+    <title>OrderPage</title>
    
     <style>
+        
 
 
 /* Remove the existing star-rating styles */
@@ -271,47 +275,13 @@
             margin-top: 30px;
         }
     </style>
-    <title>Village Free Bootstrap 5 Template for Villageture and Interior Design Websites by Untree.co </title>
+    <title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
 </head>
 
 <body>
 
     <!-- Start Header Area -->
-    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Village navigation bar">
-        <div class="container">
-            <a class="navbar-brand" href="/">Village<span>.</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsVillage"
-                aria-controls="navbarsVillage" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarsVillage">
-                <div class="search-bar">
-                    <input type="text" class="search-input" placeholder="Search...">
-                    <button class="search-button"><img src="/images/searcharrow.png"></button>
-                </div>
-
-                <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-                    <li><a class="nav-link" href="/"><img src="/images/homesvg.svg"></a></li>
-                    <li><a class="nav-link" href="/profile"><img src="/images/user.svg"></a></li>
-                    <li><a class="nav-link" href="/cartpage"><img src="/images/cart.svg"></a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="select-line" style="background-color: #3b5d50;margin-bottom: 1px;margin-top: 1px;">
-        <ul class="custom-horizontal-list navbar-nav ms-auto mb-2 mb-md-0"
-            style="display: flex; list-style: none; flex-direction: row; justify-content: center; gap: 23px;">
-            <% categories.filter(category => category.status !== false).forEach(category => { %>
-            <li class="nav-item">
-                <a class="nav-link" href="/shop?category=<%= category._id %>"
-                    style="color: #F0EAD6; font-size: 150%;">
-                    <%= category.name %>
-                </a>
-            </li>
-            <% }); %>
-        </ul>
-    </div>
+<%-include('userpartials/nav')%>
 
     <!-- End Header Area -->
 
@@ -359,7 +329,7 @@
                     <h3>Order Address</h3>
                     <p style="font-size: 20px;"><%=order.shippingAddress.fullname%><br><%=order.shippingAddress.adname%>&nbsp;,&nbsp;<%=order.shippingAddress.street%><br><%=order.shippingAddress.city%>&nbsp;,&nbsp;<%=order.shippingAddress.pincode%><br><%=order.shippingAddress.phonenumber%></p>
 
-                    <a href="/editaddress/<%=order.shippingAddress._id%>" class="btn btn-link">Edit Address</a>
+                    <a href="#" class="btn btn-link">Edit Address</a>
                 </div>
             </div>
 
@@ -458,13 +428,13 @@
         <div class="order-total">
             
             <h2><strong>Total Amount:</strong><%=order.totalPrice%></h2>
-            <div style="margin-top: 30px; margin-bottom:12px;margin-left: 500px;">
+            <div style="margin-top: 2vw; margin-bottom:1vw; margin-left: 35vw;">
                 <% if (order.status !== 'Cancelled' && order.status !== 'Returned' && order.status !== 'Delivered') { %>
                     <!-- Code to execute if the condition is true -->
-                <a style="background-color: rgb(181, 0, 0);width: 350px;" onclick="confirmDialogue('/cancelorder/<%=order._id%>')" class="btn btn-danger">Cancel Order</a>
+                <a style="background-color: rgb(181, 0, 0);width: auto;" onclick="confirmDialogue('/cancelorder/<%=order._id%>')" class="btn btn-danger">Cancel Order</a>
                 <% } else if (order.status === 'Delivered') { %>
                     <!-- Code to execute if the condition is false -->
-                    <a style="background-color: rgb(181, 0, 0);width: 350px;" onclick="confirmDialogue('/returnorder/<%=order._id%>')" class="btn btn-danger">Return Order</a>
+                    <a style="background-color: rgb(181, 0, 0);width: auto;" onclick="confirmDialogue('/returnorder/<%=order._id%>')" class="btn btn-danger">Return Order</a>
                     <% } %>
             
             </div>
