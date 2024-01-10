@@ -59,9 +59,7 @@
                         <th>Title</th>
                        
                         <th>Image</th>
-                      
-                        <th>Status</th>
-
+              
                         <th>Action</th>
                         
                         
@@ -82,9 +80,8 @@
                           <img style="border-radius: 0%; width: 100px; height: 100px;" src="<%= data.image.url %>">
                           
                       <!-- <td><%= data.description %></td> -->
-                      <td><%= data.active? 'Listed' : 'Unlisted' %></td>
+                      
                         <td>
-                          <a  class="btn btn-secondary btn-sm" onclick="confirmUnlist('<%= data._id %>')"><%= data.active ? 'Unlist' : 'List' %></a>
 
                           <a href="/admin/updateBanner/<%= data._id%>" class="btn btn-primary btn-sm">Edit</a>
 
