@@ -15,7 +15,9 @@ const logoutAdmin = (req, res, next) => {
   try {
     if (!req.session.admin) {
       next();
-    } else {
+      
+    } else{
+      console.log("ajdhgasjhdga");
       res.redirect("/admin/adminpanel");
     }
   } catch (error) {

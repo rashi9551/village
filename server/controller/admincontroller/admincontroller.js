@@ -17,7 +17,7 @@ const flash=require("express-flash")
 const login = async (req, res) => {
   try {
     if(req.session.isadAuth){
-      res.redirect("/admin/adminpannel")
+      return res.redirect("/admin/adminpannel")
     }
     res.render("admin/adminlogin.ejs");
   } catch (error) {
