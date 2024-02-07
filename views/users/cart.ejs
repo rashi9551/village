@@ -391,7 +391,7 @@
 
                         if (data.success) {
                             quantityInput.value = data.newQuantity;
-                            document.getElementById(`total${index}`).innerText = `₹ ${price * data.newQuantity}`;
+                            document.getElementById(`total${index}`).innerText = `₹ ${(price * data.newQuantity).toFixed(2)}`;
 
 
                             document.getElementById('total').innerText = `₹ ${data.total}`;

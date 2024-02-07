@@ -163,12 +163,13 @@ const updatecart = async (req, res) => {
 
     cart.item[itemIndex].quantity = updatedQuantity;
 
-    const newProductTotal = price * updatedQuantity;
-    cart.item[itemIndex].total = newProductTotal;
+    const newProductTotal = (price * updatedQuantity).toFixed(2)
+    cart.item[itemIndex].total = newProductTotal
     const total = cart.item.reduce((acc, item) => acc + item.total, 0);
     console.log("total", total);
     console.log("itens total:", newProductTotal);
-    cart.total = total;
+    cart.total = total
+
     await cart.save();
 
     res.json({
