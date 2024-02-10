@@ -15,7 +15,7 @@ const createCoupon=async(req,res)=>{
             console.log("Coupon exists");
             res.redirect('/admin/couponList');
         }
-        else if(!couponValid){
+        else if(!couponValid){ 
             req.flash('couponCodeError','Enter A Valid Coupon')
             return res.redirect('/admin/newcoupon')
         }
