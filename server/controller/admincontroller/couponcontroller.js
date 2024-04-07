@@ -1,14 +1,14 @@
 const couponModel=require("../../model/coupon_model")
 const flash=require('express-flash')
 
-const {alphanumValid,onlyNumbers}=require('../../../utils/validators/admin_validator')
+const {alphanumValid,onlyNumbers,isValidCoupon}=require('../../../utils/validators/admin_validator')
 
 const createCoupon=async(req,res)=>{
     try{
         const {couponCode,minimumPrice,discount,expiry,maxRedeem,couponType}=req.body
 
         const couponExists = await couponModel.findOne({ couponCode: couponCode });
-        const couponValid=alphanumValid(couponCode)
+        const couponValid=isValidCoupon(couponCode)
         const minimumPriceVlaid=onlyNumbers(minimumPrice)
     
         if (couponExists) {
@@ -89,7 +89,11 @@ const editCouponPage=async (req,res)=>{
     try{
         const id=req.params.id
         const coupon=await couponModel.findOne({_id:id})
-        res.render('admin/editCouponPage',{coupon:coupon})
+        res.render('admin/editCouponPage',{coupon:coupon,expressFlash:{
+            couponCodeError:req.flash('couponCodeError'),
+            minimumPriceVlaidError:req.flash('minmumPriceError')
+
+        }}) 
     }
     catch(err){
         console.log(err);
@@ -100,12 +104,17 @@ const editCouponPage=async (req,res)=>{
 const updateCoupon=async(req,res)=>{
     try{
         const {couponId,couponCode,minimumPrice,discount,expiry,maxRedeem,couponType}=req.body
-
+        console.log("ithu coupon details",couponId,couponCode,minimumPrice,discount,expiry,maxRedeem,couponType);
         const couponExists = await couponModel.findOne({ couponCode: couponCode });
-        const couponValid=alphanumValid(couponCode)
+        const couponValid=isValidCoupon(couponCode)
+        const minimumPriceVlaid=onlyNumbers(minimumPrice)
         if (couponExists) {
             console.log("Coupon exists");
-            res.redirect('/admin/couponList');
+            return res.redirect('/admin/couponList');
+        } 
+        if (!minimumPriceVlaid) {
+            req.flash('minmumPriceError','Enter A Valid price')
+            return res.redirect('/admin/newcoupon')
         } 
         else if(!couponValid){
             req.flash('couponCodeError','Enter A Valid Coupon')

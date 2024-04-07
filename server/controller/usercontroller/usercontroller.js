@@ -76,9 +76,6 @@ const index = async (req, res) => {
       bannerModel.find(),
           ]);
       
-      console.log(categories);
-      console.log(banners);
-
       const limit = 4;
       let page = parseInt(req.body.currentPage) || 1;
       const action = req.body.action;

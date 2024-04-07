@@ -8,6 +8,15 @@ const alphanumValid =(name)=>{
         res.render("users/serverError") 
     }
 }
+const isValidCoupon = (coupon) => {
+    try {
+        const couponRegex =  /^[A-Za-z0-9%]+(?:-[A-Za-z0-9%]+)?$/;
+        return couponRegex.test(coupon);
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
 
 const onlyNumbers =(str)=>{
     try {
@@ -59,5 +68,6 @@ module.exports={
     onlyNumbers,
     zerotonine,
     AlphaOnly,
-    isFutureDate
+    isFutureDate,
+    isValidCoupon
 }
