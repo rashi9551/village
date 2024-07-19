@@ -34,20 +34,25 @@ const checkoutreload = async (req, res) => {
     req.session.chadInfo=req.body;
 
     const userId = req.session.userId;
-    console.log("userid", req.session.userId);
-
+    console.log("userid =-=-=-=-=-=-", req.session.userId);
+    
     const existingUser = await userModel.findOne({ _id: userId });
+    const availableCoupons = await couponModel.find({
+      couponCode: { $nin: existingUser.usedCoupons },
+      status: true,
+    });
     console.log("exixteing user", existingUser);
     const fullnamevalid=bnameValid(fullname)
-        const saveasvalid=bnameValid(saveas)
-        const adnameValid=bnameValid(adname)
-        const streetValid=bnameValid(street)
-        const pincodevalid=pincodeValid(pincode)
-        const cityValid=bnameValid(city)
-        const stateValid=bnameValid(state)
-        const countryValid=bnameValid(country)
-        const phoneValid=adphoneValid(phone)
-if(!fullnamevalid)
+    const saveasvalid=bnameValid(saveas)
+    const adnameValid=bnameValid(adname)
+    const streetValid=bnameValid(street)
+    const pincodevalid=pincodeValid(pincode)
+    const cityValid=bnameValid(city)
+    const stateValid=bnameValid(state)
+    const countryValid=bnameValid(country)
+    const phoneValid=adphoneValid(phone)
+    console.log(fullnamevalid,saveasvalid,streetValid,"]=--=-=-=-");
+    if(!fullnamevalid)
 {
 req.flash("fullnameerror","Enter a valid name")
  return res.redirect(`/checkoutpage?cartId=${cartId}`)
@@ -89,7 +94,7 @@ if(!countryValid){
     return res.redirect(`/checkoutpage?cartId=${cartId}`)
   }
 if(!phoneValid){
-    req.flash("phoneerror","Enter valid country ")
+    req.flash("phoneerror","Enter valid number ")
     return res.redirect(`/checkoutpage?cartId=${cartId}`)
 
 }
@@ -110,6 +115,7 @@ if (existingUser) {
           }
       }
   });
+  console.log(existingAddress,"ithu ello okeyeeeeee");
       if (existingAddress) {
         return res.redirect(`/checkoutpage?cartId=${cartId}`)
       }
@@ -128,6 +134,7 @@ if (existingUser) {
         phonenumber: phone,
       });
       await existingUser.save();
+      console.log("work aaayi");
     }
 
     const categories = await catModel.find();
@@ -151,7 +158,7 @@ if (existingUser) {
       itemTotal: cartItem.total,
     }));
     console.log("cart total", cartItems);
-    res.render("users/checkout", { addresses, cartItems, categories, cart });
+    res.render("users/checkout", { availableCoupons,addresses, cartItems, categories, cart });
   } catch (error) {
     console.log(error);
     res.render("users/serverError")
@@ -279,6 +286,7 @@ const checkoutpage = async (req, res) => {
       couponCode: { $nin: user.usedCoupons },
       status: true,
     });
+    console.log(req.flash());
     console.log("coupons", availableCoupons);
 
     const addresslist = await userModel.findOne({ _id: userId });
@@ -319,7 +327,7 @@ const checkoutpage = async (req, res) => {
       itemTotal: cartItem.total,
     }));
 
-    console.log("Cart Total:", cart.total);
+    console.log("Cart Total:", cart.total,availableCoupons);
 
     res.render("users/checkout", {
       availableCoupons,

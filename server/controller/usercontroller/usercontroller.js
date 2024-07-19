@@ -386,17 +386,21 @@ const resendotp = async (req, res) => {
 const login = async (req, res) => {
   try {
     const username = req.body.username;
-    const user = await userModel.findOne({ username: username });
+    console.log(username);
+    const user = await userModel.findOne({ email: username });
 
     // Check if the user exists
     if (!user) {
+      console.log("no user");
       res.render("users/serverError")
+      return
     }
 
     const passwordmatch = await bcrypt.compare(
       req.body.password,
       user.password
     );
+    console.log(passwordmatch,user.status,"=-=-=-=-=-=");
 
     if (passwordmatch && !user.status) {
       // Authentication successful
@@ -404,16 +408,19 @@ const login = async (req, res) => {
       req.session.username = user.username;
       req.session.isAuth = true;
       res.redirect("/");
+      ;
     } else {
       res.render("users/signin", {
         passworderror: "incorrect passwordor/username",
       });
+      return
     }
     // Authentication failed
   } catch (error) {
     res.render("users/signin", {
     passworderror: "incorrect passwordor/username",
     });
+    return
   }
 };
 const forgotpassword = async (req, res) => {

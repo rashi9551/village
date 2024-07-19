@@ -1,6 +1,6 @@
 const bnameValid =(fullname)=>{
     try{
-    nameRegex=/^[A-Za-z]+$/
+    const nameRegex = /^[A-Za-z\s]+$/;
     return fullname.length>1 && nameRegex.test(fullname)
     }catch(error){
         console.log(error);
@@ -10,7 +10,7 @@ const bnameValid =(fullname)=>{
 
 const adphoneValid=(phone)=>{
     try {
-        phonRegex=/^[0-9]{10}$/
+        const phonRegex=/^[0-9]+$/;
         return phonRegex.test(phone)
         
     } catch (error) {
@@ -22,7 +22,8 @@ const adphoneValid=(phone)=>{
 
 const pincodeValid=(code)=>{
     try {
-        pincodeRegex=/^[0-9]{6}$/
+        const pincodeRegex=/^[0-9]*$/;
+
         return pincodeRegex.test(code)
         
     } catch (error) {

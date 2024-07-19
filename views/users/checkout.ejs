@@ -388,8 +388,8 @@
 										<div class="modal-content">
 											<span class="close" onclick="closeModal()">&times;</span>
 											<ul>
-												<% if(availableCoupons.length>=0){%>
-													<% availableCoupons.forEach(coupon=> { %>
+												<% if(availableCoupons && availableCoupons.length>0){%>
+													<% availableCoupons?.forEach(coupon=> { %>
 														<li>
 															<div class="row">
 																<div class="col-3">

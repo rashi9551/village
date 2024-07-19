@@ -9,7 +9,8 @@ const os=require('os')
 const path=require('path')
 const puppeteer=require('puppeteer')
 const {isFutureDate}=require('../../../utils/validators/admin_validator')
-const flash=require("express-flash")
+const flash=require("express-flash");
+const { log } = require("console");
 
 
 
@@ -31,6 +32,7 @@ const adminlogin = async (req, res) => {
   try {
     const trues = "true";
     const user = await adminmodel.findOne({ isAdmin: trues });
+    console.log(req.body);
     const passwordmatch = await bcrypt.compare(
       req.body.password,
       user.password
