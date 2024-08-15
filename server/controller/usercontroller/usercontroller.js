@@ -88,7 +88,7 @@ const index = async (req, res) => {
       const from = skip + 1;
       const to = skip + limit;
       const products=await productModel.find().limit(limit).skip(skip)
-
+      console.log(products,"=-=-=-=-=-=-");
       if(req.body.currentPage)
       {
         return res.json({

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const favModel = require("../../model/favourite_model");
 const {
   passwordValid,
+  confirmpasswordValid
 } = require("../../../utils/validators/usersignupvalidators");
 const productModel = require("../../model/product_model");
 
@@ -247,11 +248,11 @@ const changepassword = async (req, res) => {
     const password = req.body.newPassword;
     const newpassword = req.body.confirmPassword;
     const ispasswordvalid = passwordValid(newpassword);
-    // const isconfirmpasswordvallid=confirmpasswordValid(cpassword,password)
+    const isconfirmpasswordvallid=confirmpasswordValid(newpassword,password)
     const categories = await catModel.find();
     const user = await userModel.findById(userid);
-    const passwordmatch = await bcrypt.compare(password, user.password);
-    if (passwordmatch) {
+    console.log(user,newpassword,password,"=-=-=-=-=-=-");
+    if (newpassword&&password) {
       if (!ispasswordvalid) {
         console.log("passwor not valid");
         res.render("users/userdetails", {
@@ -259,11 +260,13 @@ const changepassword = async (req, res) => {
           categories: categories,
           userData: user,
         });
+        return
       }
-      // if(!isconfirmpasswordvallid)
-      // {
-      //     res.render("users/userdetails",{cperror:"passworld dont matched",categories:categories,userData:user})
-      // }
+      if(!isconfirmpasswordvallid)
+      {
+          res.render("users/userdetails",{cperror:"passworld dont matched",categories:categories,userData:user})
+          return
+      }
       else {
         const newhashedpassword = await bcrypt.hash(newpassword, 10);
         await userModel.updateOne(
@@ -271,6 +274,7 @@ const changepassword = async (req, res) => {
           { password: newhashedpassword }
         );
         res.redirect("/userdetails");
+        return
       }
     } else {
       res.render("users/userdetails", {
@@ -278,6 +282,7 @@ const changepassword = async (req, res) => {
         categories: categories,
         userData: user,
       });
+      return
     }
   } catch (error) {
     console.log(error);

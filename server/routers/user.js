@@ -50,7 +50,6 @@ usrouter.get("/newpassword",forgot, usercontroller.newpassword);
 
 usrouter.post("/resetpassword",forgot, usercontroller.resetpassword);
 
-
 usrouter.get("/logout",logedtohome, usercontroller.logout);
 
 

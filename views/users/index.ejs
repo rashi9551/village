@@ -207,18 +207,21 @@ body {
 				<div class="row" id="product-container" >
 					
 					<% products.forEach(product => { %>
-					  <div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
-						<a class="product-item" href="/singleproduct/<%= product._id %>" data-types="<%= product.type %>">
-						  <img src="<%= product.images[0] %>" class="img-fluid product-thumbnail" style="width: 100%; height: 40vh;object-fit: cover;";>
-						  <h3 class="product-title"><%= product.name %></h3>
-						  <strong class="product-price">₹<%= product.price.toFixed(2) %></strong>
-						</a>
-						  <span class="icon-cross">
-							<a href="/addtocart/<%= product._id %>"><img src="images/cross.svg" class="img-fluid"></a>
-						  </span>
-						 
-					  </div>
-					<% }); %>
+						<% if (product.status === true) { %>
+						  <div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
+							<a class="product-item" href="/singleproduct/<%= product._id %>" data-types="<%= product.type %>">
+							  <img src="<%= product.images[0] %>" class="img-fluid product-thumbnail" style="width: 100%; height: 40vh;object-fit: cover;">
+							  <h3 class="product-title"><%= product.name %></h3>
+							  <strong class="product-price">₹<%= product.price.toFixed(2) %></strong>
+							</a>
+							<span class="icon-cross">
+							  <a href="/addtocart/<%= product._id %>"><img src="images/cross.svg" class="img-fluid"></a>
+							</span>
+						  </div>
+						<% } %>
+					  <% }); %>
+					  
+					  
 				  </div>
 				  <div id="container" >
 					<div class="circular-buttons">
@@ -350,20 +353,23 @@ body {
 				const productContainer = document.getElementById("product-container");
 				productContainer.innerHTML = ""; // Corrected this line
 				products.forEach(product => {
-					const newHTML = `
-						<div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
-							<a class="product-item" href="/singleproduct/${product._id}" data-types="${product.type}">
-								<img src="${product.images[0]}" class="img-fluid product-thumbnail" style="width: 100%; height: 40vh; object-fit: cover;">
-								<h3 class="product-title">${product.name}</h3>
-								<strong class="product-price">₹${product.price.toFixed(2)}</strong>
-							</a>
-							<span class="icon-cross">
-								<a href="/addtocart/${product._id}"><img src="images/cross.svg" class="img-fluid"></a>
-							</span>
-						</div>
-					`;
-					productContainer.innerHTML += newHTML;
-				});
+			if (product.status === true) { // Check if the product's status is true
+				const newHTML = `
+				<div class="col-md-4 col-lg-3 col-sm-6 mb-5 product-item">
+					<a class="product-item" href="/singleproduct/${product._id}" data-types="${product.type}">
+					<img src="${product.images[0]}" class="img-fluid product-thumbnail" style="width: 100%; height: 40vh; object-fit: cover;">
+					<h3 class="product-title">${product.name}</h3>
+					<strong class="product-price">₹${product.price.toFixed(2)}</strong>
+					</a>
+					<span class="icon-cross">
+					<a href="/addtocart/${product._id}"><img src="images/cross.svg" class="img-fluid"></a>
+					</span>
+				</div>
+				`;
+				productContainer.innerHTML += newHTML; // Append only if the status is true
+			}
+			});
+
 			}
 
 			function updatePaginationContainer(currentPage,totalPages){
