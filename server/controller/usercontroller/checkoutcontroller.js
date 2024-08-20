@@ -206,7 +206,9 @@ const order = new orderModel({
 });
 
     console.log("items", items);
-    await order.save();
+    if(req.session.checkout){
+      await order.save();
+    }
 
     for (const item of items) {
       await cartModel.updateOne(
