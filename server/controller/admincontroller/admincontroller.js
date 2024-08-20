@@ -495,7 +495,7 @@ const downloadsales = async (req, res) => {
             <table style="border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+                        <th style="border: 1px solid #000; padding: 8px;">Sl No</th>
                         <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
                         <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
                     </tr>
@@ -541,6 +541,11 @@ const downloadsales = async (req, res) => {
       const downloadsPath = path.join(os.homedir(), 'Downloads');
       const pdfFilePath = path.join(downloadsPath, 'sales.pdf');
 
+      // Ensure the directory exists
+      if (!fs.existsSync(downloadsPath)) {
+        fs.mkdirSync(downloadsPath, { recursive: true });
+      }
+
       // Save the PDF file locally
       fs.writeFileSync(pdfFilePath, pdfBuffer);
 
@@ -550,10 +555,11 @@ const downloadsales = async (req, res) => {
       res.setHeader('Content-Disposition', 'attachment; filename=sales.pdf');
       res.status(200).end(pdfBuffer);
   } catch (err) {
-      console.error(err);
-      res.render("users/serverError");
+      console.error('Error generating sales report:', err);
+      res.render("users/serverError", { error: err.message });
   }
 };
+
 
 
 // module exporting 
