@@ -405,7 +405,7 @@ const generateInvoice=async (order)=>{
 
       total: parseInt(totalAmount),
       tax: 0,
-      bottomNotice: "Thank you for shopping at UrbanSole!",
+      bottomNotice: "Thank you for shopping at VillageFurni!",
     };
   const result = await easyinvoice.createInvoice(data);
   const pdfBuffer = Buffer.from(result.pdf, "base64");
