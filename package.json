@@ -30,6 +30,7 @@
     "os": "^0.1.2",
     "otp-generator": "^4.0.1",
     "path": "^0.12.7",
+    "playwright": "^1.46.1",
     "punycode": "^2.3.1",
     "puppeteer": "^21.6.1",
     "razorpay": "^2.9.2",

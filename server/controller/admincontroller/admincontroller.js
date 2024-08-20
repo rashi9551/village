@@ -12,6 +12,9 @@ const {isFutureDate}=require('../../../utils/validators/admin_validator')
 const flash=require("express-flash");
 const { log } = require("console");
 
+const { chromium } = require('playwright');
+
+
 
 
 // admin login page
@@ -238,21 +241,178 @@ const chartData=async(req,res)=>{
 
 }
 
+// const downloadsales = async (req, res) => {
+//   try {
+//       const { startDate, endDate } = req.body;
+
+//       let sdate=isFutureDate(startDate)
+//       let edate=isFutureDate(endDate)
+
+//       if(sdate){
+//         req.flash('derror','invalid date')
+//         return res.redirect('/admin/adminpannel')
+//       }
+//       if(edate){
+//         req.flash('derror','invalid date')
+//         return res.redirect('/admin/adminpannel')
+
+//       }
+
+//       const salesData = await orderModel.aggregate([
+//           {
+//               $match: {
+//                   createdAt: {
+//                       $gte: new Date(startDate),
+//                       $lt: new Date(endDate),
+//                   },
+//               },
+//           },
+//           {
+//               $group: {
+//                   _id: null,
+//                   totalOrders: { $sum: 1 },
+//                   totalAmount: { $sum: '$totalPrice' },
+//               },
+//           },
+//       ]);
+//       console.log("ithu sales",salesData);
+
+//       const products = await orderModel.aggregate([
+//           {
+//               $match: {
+//                   createdAt: {
+//                       $gte: new Date(startDate),
+//                       $lt: new Date(endDate),
+//                   },
+//               },
+//           },
+//           {
+//               $unwind: '$items',
+//           },
+//           {
+//               $group: {
+//                   _id: '$items.productId',
+//                   totalSold: { $sum: '$items.quantity' },
+//               },
+//           },
+//           {
+//               $lookup: {
+//                   from: 'products',
+//                   localField: '_id',
+//                   foreignField: '_id',
+//                   as: 'productDetails',
+//               },
+//           },
+//           {
+//               $unwind: '$productDetails',
+//           },
+//           {
+//               $project: {
+//                   _id: 1,
+//                   totalSold: 1,
+//                   productName: '$productDetails.name',
+//               },
+//           },
+//           {
+//               $sort: { totalSold: -1 },
+//           },
+//       ]);
+
+//       const htmlContent = `
+//     <!DOCTYPE html>
+//     <html lang="en">
+//     <head>
+//         <meta charset="UTF-8">
+//         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//         <title>Sales Report</title>
+//         <style>
+//             body {
+//                 margin-left: 20px;
+//             }
+//         </style>
+//     </head>
+//     <body>
+//         <h2 align="center"> Sales Report</h2>
+//         Start Date:${startDate}<br>
+//         End Date:${endDate}<br> 
+//         <center>
+//             <table style="border-collapse: collapse;">
+//                 <thead>
+//                     <tr>
+//                         <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+//                         <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+//                         <th style="border: 1px solid #000; padding: 8px;">Quantity Sold</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody>
+//                     ${products
+//                         .map(
+//                             (item, index) => `
+//                             <tr>
+//                                 <td style="border: 1px solid #000; padding: 8px;">${index + 1}</td>
+//                                 <td style="border: 1px solid #000; padding: 8px;">${item.productName}</td>
+//                                 <td style="border: 1px solid #000; padding: 8px;">${item.totalSold}</td>
+//                             </tr>`
+//                         )
+//                         .join("")}
+//                     <tr>
+//                         <td style="border: 1px solid #000; padding: 8px;"></td>
+//                         <td style="border: 1px solid #000; padding: 8px;">Total No of Orders</td>
+//                         <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalOrders || 0}</td>
+//                     </tr>
+//                     <tr>
+//                         <td style="border: 1px solid #000; padding: 8px;"></td>
+//                         <td style="border: 1px solid #000; padding: 8px;">Total Revenue</td>
+//                         <td style="border: 1px solid #000; padding: 8px;">${salesData[0]?.totalAmount || 0}</td>
+//                     </tr>
+//                 </tbody>
+//             </table>
+//         </center>
+//     </body>
+//     </html>
+// `;
+
+
+//       const browser = await puppeteer.launch();
+//       const page = await browser.newPage();
+//       await page.setContent(htmlContent);
+
+//       // Generate PDF
+//       const pdfBuffer = await page.pdf();
+
+//       await browser.close();
+
+//       const downloadsPath = path.join(os.homedir(), 'Downloads');
+//       const pdfFilePath = path.join(downloadsPath, 'sales.pdf');
+
+//       // Save the PDF file locally
+//       fs.writeFileSync(pdfFilePath, pdfBuffer);
+
+//       // Send the PDF as a response
+//       res.setHeader('Content-Length', pdfBuffer.length);
+//       res.setHeader('Content-Type', 'application/pdf');
+//       res.setHeader('Content-Disposition', 'attachment; filename=sales.pdf');
+//       res.status(200).end(pdfBuffer);
+//   } catch (err) {
+//       console.error(err);
+//       res.render("users/serverError");
+//     }
+// };
+
 const downloadsales = async (req, res) => {
   try {
       const { startDate, endDate } = req.body;
 
-      let sdate=isFutureDate(startDate)
-      let edate=isFutureDate(endDate)
+      let sdate = isFutureDate(startDate);
+      let edate = isFutureDate(endDate);
 
-      if(sdate){
-        req.flash('derror','invalid date')
-        return res.redirect('/admin/adminpannel')
+      if (sdate) {
+        req.flash('derror', 'invalid date');
+        return res.redirect('/admin/adminpannel');
       }
-      if(edate){
-        req.flash('derror','invalid date')
-        return res.redirect('/admin/adminpannel')
-
+      if (edate) {
+        req.flash('derror', 'invalid date');
+        return res.redirect('/admin/adminpannel');
       }
 
       const salesData = await orderModel.aggregate([
@@ -272,7 +432,6 @@ const downloadsales = async (req, res) => {
               },
           },
       ]);
-      console.log("ithu sales",salesData);
 
       const products = await orderModel.aggregate([
           {
@@ -367,10 +526,10 @@ const downloadsales = async (req, res) => {
         </center>
     </body>
     </html>
-`;
+      `;
 
-
-      const browser = await puppeteer.launch();
+      // Launch Playwright's Chromium browser
+      const browser = await chromium.launch();
       const page = await browser.newPage();
       await page.setContent(htmlContent);
 
@@ -393,7 +552,7 @@ const downloadsales = async (req, res) => {
   } catch (err) {
       console.error(err);
       res.render("users/serverError");
-    }
+  }
 };
 
 
