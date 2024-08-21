@@ -167,6 +167,9 @@ if (existingUser) {
 
 const placeorder = async (req, res) => {
   try {
+    if(!req.session.checkout){
+      return res.redirect("/")
+    }
     const categories = await catModel.find({});
     const addressId = req.body.selectedAddressId;
     const user = await userModel.findOne({
@@ -205,11 +208,8 @@ const order = new orderModel({
   status: "pending",
 });
 
-    console.log("items", items);
-    if(req.session.checkout){
-      await order.save();
-    }
-
+    console.log("session checkout", req.session.checkout);
+    await order.save();
     for (const item of items) {
       await cartModel.updateOne(
         { userId: userId },

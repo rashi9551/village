@@ -810,6 +810,7 @@
 						};
 						var rzp1 = new Razorpay(options);
 						rzp1.on('payment.failed', function (response) {
+							console.log(response);
 							alert(response.error.code);
 							
 						});
